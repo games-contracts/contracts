@@ -32,8 +32,8 @@ contract Airdrop is AccessControl {
         _setupRole(OWNER_ROLE, msg.sender);
     }
 
-    function claimTokens(address user, uint amount, bytes memory signature) public {
-        require(getSigner(user, amount, signature), "wrong signature");
+    function claimTokens(address user, uint amount, uint expire, bytes memory signature) public {
+        require(getSigner(user, amount, expire, signature), "wrong signature");
         require(!wasClaimed[signature], "signature was claimed");
         wasClaimed[signature] = true;
 
@@ -45,9 +45,10 @@ contract Airdrop is AccessControl {
         emit Claim(msg.sender, amount);
     }
 
-    function getSigner(address user, uint amount, bytes memory signature)
+    function getSigner(address user, uint amount, uint expire, bytes memory signature)
     internal view returns (bool) {
-        bytes32 hash = keccak256(abi.encodePacked(user, amount, address(this)));
+        require(block.timestamp <= expire, "signature expire");
+        bytes32 hash = keccak256(abi.encodePacked(user, amount, expire, address(this)));
         bytes32 messageHash = hash.toEthSignedMessageHash();
         address signatory = messageHash.recover(signature);
         return hasRole(SIGNER_ROLE, signatory);
