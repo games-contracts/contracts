@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 
-contract Airdrop is AccessControl {
+contract ClaimToken is AccessControl {
     string public constant name = "Airdrop Contract";
     bytes32 public constant OWNER_ROLE = keccak256("OWNER_ROLE");
     bytes32 public constant SIGNER_ROLE = keccak256("SIGNER_ROLE");
@@ -32,7 +32,7 @@ contract Airdrop is AccessControl {
         _setupRole(OWNER_ROLE, msg.sender);
     }
 
-    function claimTokens(address user, uint amount, uint expire, bytes memory signature) public {
+    function claim(address user, uint amount, uint expire, bytes memory signature) public {
         require(getSigner(user, amount, expire, signature), "wrong signature");
         require(!wasClaimed[signature], "signature was claimed");
         wasClaimed[signature] = true;

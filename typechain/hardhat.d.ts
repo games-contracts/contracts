@@ -97,10 +97,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ADTHero__factory>;
     getContractFactory(
-      name: "Airdrop",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.Airdrop__factory>;
-    getContractFactory(
       name: "BreedingService",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.BreedingService__factory>;
@@ -109,9 +105,21 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC721__factory>;
     getContractFactory(
+      name: "Call",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.Call__factory>;
+    getContractFactory(
+      name: "Party",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.Party__factory>;
+    getContractFactory(
       name: "ChainVerseEvent",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ChainVerseEvent__factory>;
+    getContractFactory(
+      name: "ClaimToken",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ClaimToken__factory>;
     getContractFactory(
       name: "Log",
       signerOrOptions?: ethers.Signer | FactoryOptions
