@@ -42,15 +42,22 @@ interface ADTHeroInterface extends ethers.utils.Interface {
     "name()": FunctionFragment;
     "ownerOf(uint256)": FunctionFragment;
     "renounceRole(bytes32,address)": FunctionFragment;
+    "revenueAddress()": FunctionFragment;
     "revokeRole(bytes32,address)": FunctionFragment;
     "safeTransferFrom(address,address,uint256)": FunctionFragment;
     "setApprovalForAll(address,bool)": FunctionFragment;
     "setBaseUri(string)": FunctionFragment;
     "setCurrency(address)": FunctionFragment;
+    "setRevenueAddress(address)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
     "symbol()": FunctionFragment;
+    "tokenByIndex(uint256)": FunctionFragment;
+    "tokenIds(address)": FunctionFragment;
+    "tokenOfOwnerByIndex(address,uint256)": FunctionFragment;
     "tokenURI(uint256)": FunctionFragment;
+    "totalSupply()": FunctionFragment;
     "transferFrom(address,address,uint256)": FunctionFragment;
+    "withdrawRevenue()": FunctionFragment;
   };
 
   encodeFunctionData(
@@ -139,6 +146,10 @@ interface ADTHeroInterface extends ethers.utils.Interface {
     values: [BytesLike, string]
   ): string;
   encodeFunctionData(
+    functionFragment: "revenueAddress",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "revokeRole",
     values: [BytesLike, string]
   ): string;
@@ -153,17 +164,38 @@ interface ADTHeroInterface extends ethers.utils.Interface {
   encodeFunctionData(functionFragment: "setBaseUri", values: [string]): string;
   encodeFunctionData(functionFragment: "setCurrency", values: [string]): string;
   encodeFunctionData(
+    functionFragment: "setRevenueAddress",
+    values: [string]
+  ): string;
+  encodeFunctionData(
     functionFragment: "supportsInterface",
     values: [BytesLike]
   ): string;
   encodeFunctionData(functionFragment: "symbol", values?: undefined): string;
   encodeFunctionData(
+    functionFragment: "tokenByIndex",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(functionFragment: "tokenIds", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "tokenOfOwnerByIndex",
+    values: [string, BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "tokenURI",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "totalSupply",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "transferFrom",
     values: [string, string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "withdrawRevenue",
+    values?: undefined
   ): string;
 
   decodeFunctionResult(
@@ -216,6 +248,10 @@ interface ADTHeroInterface extends ethers.utils.Interface {
     functionFragment: "renounceRole",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "revenueAddress",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "revokeRole", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "safeTransferFrom",
@@ -231,13 +267,34 @@ interface ADTHeroInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "setRevenueAddress",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "supportsInterface",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "symbol", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "tokenByIndex",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "tokenIds", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "tokenOfOwnerByIndex",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "tokenURI", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "totalSupply",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "transferFrom",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "withdrawRevenue",
     data: BytesLike
   ): Result;
 
@@ -251,8 +308,11 @@ interface ADTHeroInterface extends ethers.utils.Interface {
     "RoleRevoked(bytes32,address,address)": EventFragment;
     "SetBaseUri(string)": EventFragment;
     "SetCurrency(address)": EventFragment;
+    "SetRevenueAddress(address)": EventFragment;
     "Sold(uint256,address,tuple,uint256)": EventFragment;
     "Transfer(address,address,uint256)": EventFragment;
+    "UsedSignature(bytes)": EventFragment;
+    "WithdrawRevenue(address,uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "Approval"): EventFragment;
@@ -264,8 +324,11 @@ interface ADTHeroInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "RoleRevoked"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SetBaseUri"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SetCurrency"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "SetRevenueAddress"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Sold"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "UsedSignature"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "WithdrawRevenue"): EventFragment;
 }
 
 export class ADTHero extends BaseContract {
@@ -421,6 +484,8 @@ export class ADTHero extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    revenueAddress(overrides?: CallOverrides): Promise<[string]>;
+
     revokeRole(
       role: BytesLike,
       account: string,
@@ -458,6 +523,11 @@ export class ADTHero extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    setRevenueAddress(
+      _revenue: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     supportsInterface(
       interfaceId: BytesLike,
       overrides?: CallOverrides
@@ -465,15 +535,37 @@ export class ADTHero extends BaseContract {
 
     symbol(overrides?: CallOverrides): Promise<[string]>;
 
+    tokenByIndex(
+      index: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
+    tokenIds(
+      user: string,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber[]] & { ids: BigNumber[] }>;
+
+    tokenOfOwnerByIndex(
+      owner: string,
+      index: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
     tokenURI(
       tokenId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[string]>;
 
+    totalSupply(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     transferFrom(
       from: string,
       to: string,
       tokenId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    withdrawRevenue(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
   };
@@ -582,6 +674,8 @@ export class ADTHero extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  revenueAddress(overrides?: CallOverrides): Promise<string>;
+
   revokeRole(
     role: BytesLike,
     account: string,
@@ -619,6 +713,11 @@ export class ADTHero extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  setRevenueAddress(
+    _revenue: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   supportsInterface(
     interfaceId: BytesLike,
     overrides?: CallOverrides
@@ -626,12 +725,31 @@ export class ADTHero extends BaseContract {
 
   symbol(overrides?: CallOverrides): Promise<string>;
 
+  tokenByIndex(
+    index: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  tokenIds(user: string, overrides?: CallOverrides): Promise<BigNumber[]>;
+
+  tokenOfOwnerByIndex(
+    owner: string,
+    index: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
   tokenURI(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
+
+  totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
   transferFrom(
     from: string,
     to: string,
     tokenId: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  withdrawRevenue(
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -740,6 +858,8 @@ export class ADTHero extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    revenueAddress(overrides?: CallOverrides): Promise<string>;
+
     revokeRole(
       role: BytesLike,
       account: string,
@@ -771,6 +891,11 @@ export class ADTHero extends BaseContract {
 
     setCurrency(_currency: string, overrides?: CallOverrides): Promise<void>;
 
+    setRevenueAddress(
+      _revenue: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     supportsInterface(
       interfaceId: BytesLike,
       overrides?: CallOverrides
@@ -778,7 +903,22 @@ export class ADTHero extends BaseContract {
 
     symbol(overrides?: CallOverrides): Promise<string>;
 
+    tokenByIndex(
+      index: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    tokenIds(user: string, overrides?: CallOverrides): Promise<BigNumber[]>;
+
+    tokenOfOwnerByIndex(
+      owner: string,
+      index: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     tokenURI(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
+
+    totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
     transferFrom(
       from: string,
@@ -786,6 +926,8 @@ export class ADTHero extends BaseContract {
       tokenId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    withdrawRevenue(overrides?: CallOverrides): Promise<void>;
   };
 
   filters: {
@@ -877,6 +1019,10 @@ export class ADTHero extends BaseContract {
       currency?: null
     ): TypedEventFilter<[string], { currency: string }>;
 
+    SetRevenueAddress(
+      revenue?: null
+    ): TypedEventFilter<[string], { revenue: string }>;
+
     Sold(
       newItemId?: null,
       player?: null,
@@ -916,6 +1062,18 @@ export class ADTHero extends BaseContract {
     ): TypedEventFilter<
       [string, string, BigNumber],
       { from: string; to: string; tokenId: BigNumber }
+    >;
+
+    UsedSignature(
+      signature?: null
+    ): TypedEventFilter<[string], { signature: string }>;
+
+    WithdrawRevenue(
+      revenue?: null,
+      amount?: null
+    ): TypedEventFilter<
+      [string, BigNumber],
+      { revenue: string; amount: BigNumber }
     >;
   };
 
@@ -1022,6 +1180,8 @@ export class ADTHero extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    revenueAddress(overrides?: CallOverrides): Promise<BigNumber>;
+
     revokeRole(
       role: BytesLike,
       account: string,
@@ -1059,6 +1219,11 @@ export class ADTHero extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    setRevenueAddress(
+      _revenue: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     supportsInterface(
       interfaceId: BytesLike,
       overrides?: CallOverrides
@@ -1066,15 +1231,34 @@ export class ADTHero extends BaseContract {
 
     symbol(overrides?: CallOverrides): Promise<BigNumber>;
 
+    tokenByIndex(
+      index: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    tokenIds(user: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    tokenOfOwnerByIndex(
+      owner: string,
+      index: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     tokenURI(
       tokenId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
+
     transferFrom(
       from: string,
       to: string,
       tokenId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    withdrawRevenue(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
   };
@@ -1187,6 +1371,8 @@ export class ADTHero extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    revenueAddress(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     revokeRole(
       role: BytesLike,
       account: string,
@@ -1224,6 +1410,11 @@ export class ADTHero extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    setRevenueAddress(
+      _revenue: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     supportsInterface(
       interfaceId: BytesLike,
       overrides?: CallOverrides
@@ -1231,15 +1422,37 @@ export class ADTHero extends BaseContract {
 
     symbol(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    tokenByIndex(
+      index: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    tokenIds(
+      user: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    tokenOfOwnerByIndex(
+      owner: string,
+      index: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     tokenURI(
       tokenId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    totalSupply(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     transferFrom(
       from: string,
       to: string,
       tokenId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    withdrawRevenue(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };

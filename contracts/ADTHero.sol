@@ -2,12 +2,12 @@
 pragma solidity >=0.8.4;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 
-contract ADTHero is AccessControl, ERC721 {
+contract ADTHero is AccessControl, ERC721Enumerable {
     using ECDSA for bytes32;
 
     using Counters for Counters.Counter;
@@ -52,6 +52,7 @@ contract ADTHero is AccessControl, ERC721 {
 
     string private baseUri;
     address private currency;
+    address public revenueAddress;
 
     mapping(uint256 => HeroInfo) private heroes;
     mapping(uint256 => string) private tokenURIs;
@@ -61,10 +62,13 @@ contract ADTHero is AccessControl, ERC721 {
     event SetBaseUri(string baseUri);
     event ChangeName(uint256 heroId, string name);
     event Sold(uint256 newItemId, address player, HeroInfo hero, uint256 price);
+    event UsedSignature(bytes signature);
     event SetCurrency(address currency);
+    event SetRevenueAddress(address revenue);
+    event WithdrawRevenue(address revenue, uint256 amount);
 
-    constructor() ERC721("ADT Character", "ADC") {
-        baseUri = "https://baseUri/";
+    constructor() ERC721("ADT Hero", "ADTH") {
+        baseUri = "https://api.arcadedot.xyz/hero/metadata/";
 
         _setRoleAdmin(OWNER_ROLE, OWNER_ROLE);
         _setRoleAdmin(MINTER_ROLE, OWNER_ROLE);
@@ -83,12 +87,19 @@ contract ADTHero is AccessControl, ERC721 {
         return tokenURIs[tokenId];
     }
 
+    function tokenIds(address user) external view returns (uint256[] memory ids){
+        uint _balance = balanceOf(user);
+        ids = new uint256[](_balance);
+        for (uint i = 0; i < _balance; i++)
+        {
+            ids[i] = tokenOfOwnerByIndex(user, i);
+        }
+    }
+
     //=== USER FUNCTION===
     function buy(HeroInfo calldata hero, uint256 price, uint256 expire, bytes memory signature) external payable returns (uint256){
         require(verifySignature(hero, price, expire, signature), "Invalid signature");
-        require(boughtSignature[signature] == false, "signature has been used");
 
-        boughtSignature[signature] = true;
         if (currency == address(0)) {
             require(msg.value >= price, "balance is not enough to pay fee");
         } else {
@@ -116,7 +127,9 @@ contract ADTHero is AccessControl, ERC721 {
     }
 
     function verifySignature(HeroInfo memory hero, uint256 price, uint256 expire, bytes memory signature)
-    internal view returns (bool) {
+    internal returns (bool) {
+        require(boughtSignature[signature] == false, "signature has been used");
+        boughtSignature[signature] = true;
         require(expire >= block.timestamp, "signature expired");
         bytes32 hash = keccak256(abi.encodePacked(
                 msg.sender,
@@ -131,15 +144,30 @@ contract ADTHero is AccessControl, ERC721 {
             ));
         bytes32 messageHash = hash.toEthSignedMessageHash();
         address signatory = messageHash.recover(signature);
+        emit UsedSignature(signature);
         return hasRole(MINTER_ROLE, signatory);
     }
     //=== OPERATION FUNCTION===
+    function withdrawRevenue() external onlyRole(OPERATION_ROLE) {
+        require(revenueAddress != address(0), "must be set revenue address");
+        IERC20 token = IERC20(currency);
+        uint256 balanceOf = token.balanceOf(address(this));
+        bool transferred = token.transfer(revenueAddress, balanceOf);
+        require(transferred, "Cannot transfer ERC20");
+        emit WithdrawRevenue(revenueAddress, balanceOf);
+    }
+
     function changeName(uint256 heroId, string calldata name) external onlyRole(OPERATION_ROLE) {
         require(_exists(heroId), "query for nonexistent token");
         heroes[heroId].name = name;
         emit ChangeName(heroId, name);
     }
     //=== OWNER FUNCTION===
+    function setRevenueAddress(address _revenue) external onlyRole(OWNER_ROLE) {
+        revenueAddress = _revenue;
+        emit SetRevenueAddress(_revenue);
+    }
+
     function setCurrency(address _currency) external onlyRole(OWNER_ROLE) {
         currency = _currency;
         emit SetCurrency(_currency);
@@ -172,8 +200,8 @@ contract ADTHero is AccessControl, ERC721 {
     ) external onlyRole(OWNER_ROLE) {
         ERC721(token).transferFrom(address(this), sendTo, tokenId);
     }
-    //=== UTIL FUNCTION===
-    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721, AccessControl) returns (bool) {
+    //=== UTILITY FUNCTION===
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721Enumerable, AccessControl) returns (bool) {
         return super.supportsInterface(interfaceId);
     }
 
@@ -188,5 +216,6 @@ contract ADTHero is AccessControl, ERC721 {
         }
         return "0";
     }
+
     receive() payable external {}
 }

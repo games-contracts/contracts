@@ -24,8 +24,8 @@ interface ClaimTokenInterface extends ethers.utils.Interface {
     "DEFAULT_ADMIN_ROLE()": FunctionFragment;
     "OWNER_ROLE()": FunctionFragment;
     "SIGNER_ROLE()": FunctionFragment;
-    "airdropToken()": FunctionFragment;
     "claim(address,uint256,uint256,bytes)": FunctionFragment;
+    "claimToken()": FunctionFragment;
     "claimedToken(address)": FunctionFragment;
     "forceReturnERC20(address,uint256,address)": FunctionFragment;
     "forceReturnERC721(address,address,uint256)": FunctionFragment;
@@ -37,7 +37,7 @@ interface ClaimTokenInterface extends ethers.utils.Interface {
     "renounceRole(bytes32,address)": FunctionFragment;
     "revokeRole(bytes32,address)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
-    "totalAirdrop()": FunctionFragment;
+    "totalClaim()": FunctionFragment;
     "wasClaimed(bytes)": FunctionFragment;
   };
 
@@ -54,12 +54,12 @@ interface ClaimTokenInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "airdropToken",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
     functionFragment: "claim",
     values: [string, BigNumberish, BigNumberish, BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "claimToken",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "claimedToken",
@@ -103,7 +103,7 @@ interface ClaimTokenInterface extends ethers.utils.Interface {
     values: [BytesLike]
   ): string;
   encodeFunctionData(
-    functionFragment: "totalAirdrop",
+    functionFragment: "totalClaim",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -120,11 +120,8 @@ interface ClaimTokenInterface extends ethers.utils.Interface {
     functionFragment: "SIGNER_ROLE",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: "airdropToken",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "claim", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "claimToken", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "claimedToken",
     data: BytesLike
@@ -157,10 +154,7 @@ interface ClaimTokenInterface extends ethers.utils.Interface {
     functionFragment: "supportsInterface",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: "totalAirdrop",
-    data: BytesLike
-  ): Result;
+  decodeFunctionResult(functionFragment: "totalClaim", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "wasClaimed", data: BytesLike): Result;
 
   events: {
@@ -168,12 +162,14 @@ interface ClaimTokenInterface extends ethers.utils.Interface {
     "RoleAdminChanged(bytes32,bytes32,bytes32)": EventFragment;
     "RoleGranted(bytes32,address,address)": EventFragment;
     "RoleRevoked(bytes32,address,address)": EventFragment;
+    "UsedSignature(bytes)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "Claim"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleAdminChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleGranted"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleRevoked"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "UsedSignature"): EventFragment;
 }
 
 export class ClaimToken extends BaseContract {
@@ -226,8 +222,6 @@ export class ClaimToken extends BaseContract {
 
     SIGNER_ROLE(overrides?: CallOverrides): Promise<[string]>;
 
-    airdropToken(overrides?: CallOverrides): Promise<[string]>;
-
     claim(
       user: string,
       amount: BigNumberish,
@@ -235,6 +229,8 @@ export class ClaimToken extends BaseContract {
       signature: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    claimToken(overrides?: CallOverrides): Promise<[string]>;
 
     claimedToken(arg0: string, overrides?: CallOverrides): Promise<[BigNumber]>;
 
@@ -291,7 +287,7 @@ export class ClaimToken extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
-    totalAirdrop(overrides?: CallOverrides): Promise<[BigNumber]>;
+    totalClaim(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     wasClaimed(arg0: BytesLike, overrides?: CallOverrides): Promise<[boolean]>;
   };
@@ -302,8 +298,6 @@ export class ClaimToken extends BaseContract {
 
   SIGNER_ROLE(overrides?: CallOverrides): Promise<string>;
 
-  airdropToken(overrides?: CallOverrides): Promise<string>;
-
   claim(
     user: string,
     amount: BigNumberish,
@@ -311,6 +305,8 @@ export class ClaimToken extends BaseContract {
     signature: BytesLike,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
+
+  claimToken(overrides?: CallOverrides): Promise<string>;
 
   claimedToken(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -367,7 +363,7 @@ export class ClaimToken extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
-  totalAirdrop(overrides?: CallOverrides): Promise<BigNumber>;
+  totalClaim(overrides?: CallOverrides): Promise<BigNumber>;
 
   wasClaimed(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
 
@@ -378,8 +374,6 @@ export class ClaimToken extends BaseContract {
 
     SIGNER_ROLE(overrides?: CallOverrides): Promise<string>;
 
-    airdropToken(overrides?: CallOverrides): Promise<string>;
-
     claim(
       user: string,
       amount: BigNumberish,
@@ -387,6 +381,8 @@ export class ClaimToken extends BaseContract {
       signature: BytesLike,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    claimToken(overrides?: CallOverrides): Promise<string>;
 
     claimedToken(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -443,7 +439,7 @@ export class ClaimToken extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    totalAirdrop(overrides?: CallOverrides): Promise<BigNumber>;
+    totalClaim(overrides?: CallOverrides): Promise<BigNumber>;
 
     wasClaimed(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
   };
@@ -483,6 +479,10 @@ export class ClaimToken extends BaseContract {
       [string, string, string],
       { role: string; account: string; sender: string }
     >;
+
+    UsedSignature(
+      signature?: null
+    ): TypedEventFilter<[string], { signature: string }>;
   };
 
   estimateGas: {
@@ -492,8 +492,6 @@ export class ClaimToken extends BaseContract {
 
     SIGNER_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
 
-    airdropToken(overrides?: CallOverrides): Promise<BigNumber>;
-
     claim(
       user: string,
       amount: BigNumberish,
@@ -501,6 +499,8 @@ export class ClaimToken extends BaseContract {
       signature: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
+
+    claimToken(overrides?: CallOverrides): Promise<BigNumber>;
 
     claimedToken(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -560,7 +560,7 @@ export class ClaimToken extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    totalAirdrop(overrides?: CallOverrides): Promise<BigNumber>;
+    totalClaim(overrides?: CallOverrides): Promise<BigNumber>;
 
     wasClaimed(arg0: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
   };
@@ -574,8 +574,6 @@ export class ClaimToken extends BaseContract {
 
     SIGNER_ROLE(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    airdropToken(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     claim(
       user: string,
       amount: BigNumberish,
@@ -583,6 +581,8 @@ export class ClaimToken extends BaseContract {
       signature: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
+
+    claimToken(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     claimedToken(
       arg0: string,
@@ -645,7 +645,7 @@ export class ClaimToken extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    totalAirdrop(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    totalClaim(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     wasClaimed(
       arg0: BytesLike,
