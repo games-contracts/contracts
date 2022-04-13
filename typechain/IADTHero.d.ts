@@ -12,6 +12,7 @@ import {
   BaseContract,
   ContractTransaction,
   Overrides,
+  PayableOverrides,
   CallOverrides,
 } from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
@@ -19,35 +20,42 @@ import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
-interface ChainVerseEventInterface extends ethers.utils.Interface {
+interface IADTHeroInterface extends ethers.utils.Interface {
   functions: {
-    "breeding(address[],string,uint256,uint256,tuple[],tuple,uint256,bytes)": FunctionFragment;
+    "buy(tuple,uint256,uint256,bytes)": FunctionFragment;
+    "transferFrom(address,address,uint256)": FunctionFragment;
   };
 
   encodeFunctionData(
-    functionFragment: "breeding",
+    functionFragment: "buy",
     values: [
-      string[],
-      string,
+      {
+        name: string;
+        military: BigNumberish;
+        sex: BigNumberish;
+        army: BigNumberish;
+        level: BigNumberish;
+      },
       BigNumberish,
-      BigNumberish,
-      { currency: string; price: BigNumberish }[],
-      { currency: string; price: BigNumberish },
       BigNumberish,
       BytesLike
     ]
   ): string;
+  encodeFunctionData(
+    functionFragment: "transferFrom",
+    values: [string, string, BigNumberish]
+  ): string;
 
-  decodeFunctionResult(functionFragment: "breeding", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "buy", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "transferFrom",
+    data: BytesLike
+  ): Result;
 
-  events: {
-    "Breeding(address[],string,uint256,uint256,tuple[],tuple,uint256,bytes)": EventFragment;
-  };
-
-  getEvent(nameOrSignatureOrTopic: "Breeding"): EventFragment;
+  events: {};
 }
 
-export class ChainVerseEvent extends BaseContract {
+export class IADTHero extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -88,109 +96,119 @@ export class ChainVerseEvent extends BaseContract {
     toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
-  interface: ChainVerseEventInterface;
+  interface: IADTHeroInterface;
 
   functions: {
-    breeding(
-      addresses: string[],
-      txs: string,
-      parent1Id: BigNumberish,
-      parent2Id: BigNumberish,
-      payments: { currency: string; price: BigNumberish }[],
-      payment: { currency: string; price: BigNumberish },
+    buy(
+      hero: {
+        name: string;
+        military: BigNumberish;
+        sex: BigNumberish;
+        army: BigNumberish;
+        level: BigNumberish;
+      },
+      price: BigNumberish,
       expire: BigNumberish,
       signature: BytesLike,
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    transferFrom(
+      from: string,
+      to: string,
+      tokenId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
   };
 
-  breeding(
-    addresses: string[],
-    txs: string,
-    parent1Id: BigNumberish,
-    parent2Id: BigNumberish,
-    payments: { currency: string; price: BigNumberish }[],
-    payment: { currency: string; price: BigNumberish },
+  buy(
+    hero: {
+      name: string;
+      military: BigNumberish;
+      sex: BigNumberish;
+      army: BigNumberish;
+      level: BigNumberish;
+    },
+    price: BigNumberish,
     expire: BigNumberish,
     signature: BytesLike,
+    overrides?: PayableOverrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  transferFrom(
+    from: string,
+    to: string,
+    tokenId: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   callStatic: {
-    breeding(
-      addresses: string[],
-      txs: string,
-      parent1Id: BigNumberish,
-      parent2Id: BigNumberish,
-      payments: { currency: string; price: BigNumberish }[],
-      payment: { currency: string; price: BigNumberish },
+    buy(
+      hero: {
+        name: string;
+        military: BigNumberish;
+        sex: BigNumberish;
+        army: BigNumberish;
+        level: BigNumberish;
+      },
+      price: BigNumberish,
       expire: BigNumberish,
       signature: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    transferFrom(
+      from: string,
+      to: string,
+      tokenId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
   };
 
-  filters: {
-    Breeding(
-      addresses?: null,
-      txs?: null,
-      parent1Id?: null,
-      parent2Id?: null,
-      payments?: null,
-      payment?: null,
-      expire?: null,
-      signature?: null
-    ): TypedEventFilter<
-      [
-        string[],
-        string,
-        BigNumber,
-        BigNumber,
-        ([string, BigNumber] & { currency: string; price: BigNumber })[],
-        [string, BigNumber] & { currency: string; price: BigNumber },
-        BigNumber,
-        string
-      ],
-      {
-        addresses: string[];
-        txs: string;
-        parent1Id: BigNumber;
-        parent2Id: BigNumber;
-        payments: ([string, BigNumber] & {
-          currency: string;
-          price: BigNumber;
-        })[];
-        payment: [string, BigNumber] & { currency: string; price: BigNumber };
-        expire: BigNumber;
-        signature: string;
-      }
-    >;
-  };
+  filters: {};
 
   estimateGas: {
-    breeding(
-      addresses: string[],
-      txs: string,
-      parent1Id: BigNumberish,
-      parent2Id: BigNumberish,
-      payments: { currency: string; price: BigNumberish }[],
-      payment: { currency: string; price: BigNumberish },
+    buy(
+      hero: {
+        name: string;
+        military: BigNumberish;
+        sex: BigNumberish;
+        army: BigNumberish;
+        level: BigNumberish;
+      },
+      price: BigNumberish,
       expire: BigNumberish,
       signature: BytesLike,
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    transferFrom(
+      from: string,
+      to: string,
+      tokenId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
   };
 
   populateTransaction: {
-    breeding(
-      addresses: string[],
-      txs: string,
-      parent1Id: BigNumberish,
-      parent2Id: BigNumberish,
-      payments: { currency: string; price: BigNumberish }[],
-      payment: { currency: string; price: BigNumberish },
+    buy(
+      hero: {
+        name: string;
+        military: BigNumberish;
+        sex: BigNumberish;
+        army: BigNumberish;
+        level: BigNumberish;
+      },
+      price: BigNumberish,
       expire: BigNumberish,
       signature: BytesLike,
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    transferFrom(
+      from: string,
+      to: string,
+      tokenId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };

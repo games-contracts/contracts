@@ -105,6 +105,14 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ADTHero__factory>;
     getContractFactory(
+      name: "ADTHShop",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ADTHShop__factory>;
+    getContractFactory(
+      name: "IADTHero",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IADTHero__factory>;
+    getContractFactory(
       name: "BreedingService",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.BreedingService__factory>;
