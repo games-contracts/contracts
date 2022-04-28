@@ -53,13 +53,11 @@ contract ADTHShop is AccessControl {
 
     IADTHero public ADTHero;
     IERC20 public ADT;
-    address public revenueAddress;
 
     mapping(bytes => bool) private boughtSignature;
 
     event Sold(uint256[] newItemIds, address player, IADTHero.HeroInfo[] heroes, uint256[] prices, uint256 expire, bytes signature);
     event SetCurrency(address currency);
-    event SetRevenueAddress(address revenue);
 
     constructor(address _ADTH, address _currency) {
         ADTHero = IADTHero(_ADTH);
@@ -130,10 +128,6 @@ contract ADTHShop is AccessControl {
         return hasRole(MINTER_ROLE, signatory);
     }
     //=== OWNER FUNCTION===
-    function setRevenueAddress(address _revenue) external onlyRole(OWNER_ROLE) {
-        revenueAddress = _revenue;
-        emit SetRevenueAddress(_revenue);
-    }
 
     function setCurrency(address _currency) external onlyRole(OWNER_ROLE) {
         ADT = IERC20(_currency);
