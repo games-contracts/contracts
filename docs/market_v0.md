@@ -18,38 +18,43 @@
 
 - Query Parameters:
 
-| Name                  | Require? |                      Type |         Description |
-|-----------------------|:--------:|--------------------------:|--------------------:|
-| `page`                |          |                  `Number` | This is page number |
-| `page_size`           |          |                  `Number` |   This is page size |
-| `name`                |          |                  `String` |        Name of item |
-| `currency`            |          |                  `String` |      Currency token |
-| `price_min`           |          |                  `Number` |           Price min |
-| `price_max`           |          |                  `Number` |           Price max |
+| Name        | Require? |                    Type |         Description |
+|-------------|:--------:|------------------------:|--------------------:|
+| `page`      |          |                `Number` | This is page number |
+| `page_size` |          |                `Number` |   This is page size |
+| `name`      |          |                `String` |        Name of item |
+| `currency`  |          |                `String` |      Currency token |
+| `price_min` |          |                `Number` |           Price min |
+| `price_max` |          |                `Number` |           Price max |
+| `gender`    |          |          `Array String` |  List gender filter |
+| `rarity`    |          |          `Array String` |  List rarity filter |
+| `empire`    |          |          `Array String` |  List empire filter |
+| `sort_by`   |          |     [Sort By](#sort-by) |             Sort by |
+| `sort_type` |          | [Sort Type](#sort-type) |           Sort type |
 
 - Response: `JSON Object`
 
 | Name                            |        Type         |         Description |
 |---------------------------------|:-------------------:|--------------------:|
-| `error_code`                    |      `Number`       |          Error code | 
+| `error_code`                    |      `Number`       |          Error code |
 | `message`                       |      `String`       |    Message response |
-| `data`                          |    `Json Object`    |       Data Response | 
-| `data.count`                    |      `Number`       |         Total items | 
-| `data.rows`                     |   `Array Object`    |          List items | 
+| `data`                          |    `Json Object`    |       Data Response |
+| `data.count`                    |      `Number`       |         Total items |
+| `data.rows`                     |   `Array Object`    |          List items |
 | `data.rows[].token_id`          |      `String`       |              Nft id |
 | `data.rows[].name`              |      `String`       |            Nft name |
 | `data.rows[].owner`             |      `String`       |    Nft owner listed |
 | `data.rows[].price`             |      `Number`       |           Nft price |
 | `data.rows[].attributes`        |      `String`       |      Nft attributes |
 | `data.rows[].listing_id`        |      `Number`       |          listing id |
-| `data.rows[].nft`               |      `String`       |        Nft contract | 
-| `data.rows[].auction`           | [Auction](#auction) | Nft state on market | 
-| `data.rows[].image`             |      `String`       |           Nft image | 
-| `data.rows[].image_preview`     |      `String`       |   Nft image preview | 
-| `data.rows[].currency`          |      `Object`       |      Nft categories | 
-| `data.rows[].currency.currency` |      `String`       |    Currency address | 
-| `data.rows[].currency.decimal`  |      `Number`       |    Currency decimal | 
-| `data.rows[].currency.symbol`   |      `String`       |     Currency symbol | 
+| `data.rows[].nft`               |      `String`       |        Nft contract |
+| `data.rows[].auction`           | [Auction](#auction) | Nft state on market |
+| `data.rows[].image`             |      `String`       |           Nft image |
+| `data.rows[].image_preview`     |      `String`       |   Nft image preview |
+| `data.rows[].currency`          |      `Object`       |      Nft categories |
+| `data.rows[].currency.currency` |      `String`       |    Currency address |
+| `data.rows[].currency.decimal`  |      `Number`       |    Currency decimal |
+| `data.rows[].currency.symbol`   |      `String`       |     Currency symbol |
 
 ### API Get Info Item
 > Description: This is API get info item
@@ -70,46 +75,46 @@
 
 | Name                          |        Type         |                                   Description |
 |-------------------------------|:-------------------:|----------------------------------------------:|
-| `error_code`                  |      `Number`       |                                    Error code | 
-| `message`                     |      `String`       |                              Message response | 
+| `error_code`                  |      `Number`       |                                    Error code |
+| `message`                     |      `String`       |                              Message response |
 | `data`                        |    `Json Object`    |                                 Data Response |
 | `data.owner`                  |      `Object`       |                                     Owner nft |
 | `data.owner.address`          |      `String`       |                                 Owner address |
 | `data.owner.username`         |      `String`       |                                    Owner name |
-| `data.owner.avatar`           |      `String`       |                                  Owner avatar | 
+| `data.owner.avatar`           |      `String`       |                                  Owner avatar |
 | `data.token_id`               |      `String`       |                                        Nft id |
 | `data.name`                   |      `String`       |                                      Nft name |
 | `data.price`                  |      `Number`       |                                     Nft price |
 | `data.image`                  |      `String`       |                                     Nft image |
 | `data.image_preview`          |      `String`       |                             Nft image preview |
 | `data.attributes`             |      `String`       |                                Nft attributes |
-| `data.nft`                    |      `String`       |                                  Nft contract | 
-| `data.auction`                | [Auction](#auction) |                           Nft state on market | 
-| `data.listing_id`             |      `Number`       |                                Nft listing id | 
+| `data.nft`                    |      `String`       |                                  Nft contract |
+| `data.auction`                | [Auction](#auction) |                           Nft state on market |
+| `data.listing_id`             |      `Number`       |                                Nft listing id |
 | `data.attributes`             |      `String`       |                                Nft attributes |
-| `data.bids`                   |   `Array Object`    |                                      Nft bids | 
+| `data.bids`                   |   `Array Object`    |                                      Nft bids |
 | `data.bids[].price`           |      `Number`       |                                     Price bid |
 | `data.bids[].bid_at`          |      `String`       |                                      Time bid |
 | `data.bids[].bidder`          |      `Object`       |                                   Bidder info |
 | `data.bids[].bidder.address`  |      `String`       |                                Bidder address |
 | `data.bids[].bidder.username` |      `String`       |                                   Bidder name |
 | `data.bids[].bidder.avatar`   |      `String`       |                                 Bidder avatar |
-| `data.histories`              |   `Array Object`    |                                 Nft histories | 
+| `data.histories`              |   `Array Object`    |                                 Nft histories |
 | `data.histories[].event`      |      `String`       |                                     Nft event |
 | `data.histories[].from`       |      `String`       |                             User address send |
 | `data.histories[].to`         |      `String`       |                        User address recipient |
 | `data.histories[].price`      |      `String`       |                                         Price |
 | `data.histories[].currency`   |      `String`       |                                      Currency |
 | `data.histories[].created_at` |      `String`       |                            History created at |
-| `data.network`                |      `Object`       |                                   Nft network | 
+| `data.network`                |      `Object`       |                                   Nft network |
 | `data.network.network`        |      `String`       |                                  Network name |
 | `data.network.chain_id`       |      `Number`       |                                      Chain id |
 | `data.network.name`           |      `String`       |                                  Network name |
-| `data.status`                 |      `String`       | Nft status on market (PUBLISH or PRE_PUBLISH) | 
-| `data.nft_supported`          |      `Boolean`      |                          Nft market supported | 
-| `data.currency`               |      `Object`       |                                Nft categories | 
-| `data.currency.currency`      |      `String`       |                              Currency address | 
-| `data.currency.decimal`       |      `Number`       |                              Currency decimal | 
+| `data.status`                 |      `String`       | Nft status on market (PUBLISH or PRE_PUBLISH) |
+| `data.nft_supported`          |      `Boolean`      |                          Nft market supported |
+| `data.currency`               |      `Object`       |                                Nft categories |
+| `data.currency.currency`      |      `String`       |                              Currency address |
+| `data.currency.decimal`       |      `Number`       |                              Currency decimal |
 | `data.currency.symbol`        |      `String`       |                               Currency symbol |
 
 ### API List Token By Wallet Address
@@ -133,27 +138,27 @@
 
 | Name                            |               Type               |            Description |
 |---------------------------------|:--------------------------------:|-----------------------:|
-| `error_code`                    |             `Number`             |             Error code | 
-| `message`                       |             `String`             |       Message response | 
-| `data`                          |             `Object`             |          Data Response | 
-| `data.count`                    |             `Number`             |            Total items | 
-| `data.rows`                     |          `Array Object`          |                  Items | 
-| `data.rows[].id`                |             `Number`             |                     Id | 
-| `data.rows[].nft`               |             `String`             |              Nft token | 
-| `data.rows[].token_id`          |             `Number`             |               Token id | 
+| `error_code`                    |             `Number`             |             Error code |
+| `message`                       |             `String`             |       Message response |
+| `data`                          |             `Object`             |          Data Response |
+| `data.count`                    |             `Number`             |            Total items |
+| `data.rows`                     |          `Array Object`          |                  Items |
+| `data.rows[].id`                |             `Number`             |                     Id |
+| `data.rows[].nft`               |             `String`             |              Nft token |
+| `data.rows[].token_id`          |             `Number`             |               Token id |
 | `data.rows[].listing_id`        |             `Number`             |             listing id |
-| `data.rows[].name`              |             `String`             |          Name of token | 
-| `data.rows[].price`             |             `Number`             |         price of token | 
-| `data.rows[].image`             |             `String`             |         Image of token | 
-| `data.rows[].asset`             |             `String`             |         Asset of token | 
-| `data.rows[].image_preview`     |             `String`             | Image preview of token | 
-| `data.rows[].attribute`         |             `String`             | Image preview of token | 
+| `data.rows[].name`              |             `String`             |          Name of token |
+| `data.rows[].price`             |             `Number`             |         price of token |
+| `data.rows[].image`             |             `String`             |         Image of token |
+| `data.rows[].asset`             |             `String`             |         Asset of token |
+| `data.rows[].image_preview`     |             `String`             | Image preview of token |
+| `data.rows[].attribute`         |             `String`             | Image preview of token |
 | `data.rows[].status`            | [Status](#status-item-on-market) |        Status of token |
-| `data.rows[].currency`          |             `Object`             |               Currency | 
-| `data.rows[].currency.currency` |             `String`             |       Currency address | 
-| `data.rows[].currency.decimal`  |             `Number`             |       Currency decimal | 
-| `data.rows[].currency.symbol`   |             `String`             |        Currency symbol |  
-| `data.rows[].created_at`        |             `String`             |             Created at | 
+| `data.rows[].currency`          |             `Object`             |               Currency |
+| `data.rows[].currency.currency` |             `String`             |       Currency address |
+| `data.rows[].currency.decimal`  |             `Number`             |       Currency decimal |
+| `data.rows[].currency.symbol`   |             `String`             |        Currency symbol |
+| `data.rows[].created_at`        |             `String`             |             Created at |
 
 ### API Check User Register Whitelist IGO
 > Description: This is API check User register whitelist IGO
@@ -310,11 +315,11 @@
 ### Social
 | value      |   Type   |        Description |
 |------------|:--------:|-------------------:|
-| `website`  | `String` |  `website url key` | 
-| `twitter`  | `String` |  `twitter url key` | 
-| `discord`  | `String` |  `discord url key` | 
-| `telegram` | `String` | `telegram url key` | 
-| `facebook` | `String` | `facebook url key` | 
+| `website`  | `String` |  `website url key` |
+| `twitter`  | `String` |  `twitter url key` |
+| `discord`  | `String` |  `discord url key` |
+| `telegram` | `String` | `telegram url key` |
+| `facebook` | `String` | `facebook url key` |
 
 ### Extra data
 > Description: extra data is in the form string. you need to convert to JSON.parse
@@ -337,7 +342,7 @@
 ### Status Item On Market
 | value         |   Type   |                 Description |
 |---------------|:--------:|----------------------------:|
-| `PENDING`     | `String` |         `Processing listed` | 
+| `PENDING`     | `String` |         `Processing listed` |
 | `PRE_PUBLISH` | `String` | `PREVIEW PUBLISH on market` |
 | `PUBLISH`     | `String` |         `PUBLISH on market` |
 | `LISTING`     | `String` |            `LISTING action` |
@@ -348,43 +353,56 @@
 ### Status
 | value |   Type   | Description |
 |-------|:--------:|------------:|
-| `1`   | `number` |    `Active` | 
-| `0`   | `number` |  `InActive` | 
+| `1`   | `number` |    `Active` |
+| `0`   | `number` |  `InActive` |
 
 ### Sorting
 | value  |   Type   |        Description |
 |--------|:--------:|-------------------:|
-| `ASC`  | `string` |   `Ascending sort` | 
-| `DESC` | `string` |  `Descending sort` | 
+| `ASC`  | `string` |   `Ascending sort` |
+| `DESC` | `string` |  `Descending sort` |
 
 ### Sorting By
 | value     |   Type   |            Description |
 |-----------|:--------:|-----------------------:|
-| `price`   | `string` |        `Sort by price` | 
-| `listing` | `string` | `Sort by listing time` | 
+| `price`   | `string` |        `Sort by price` |
+| `listing` | `string` | `Sort by listing time` |
 
 ### Response Status
 | value |   Type   | Description |
 |-------|:--------:|------------:|
-| `1`   | `number` |   `Success` | 
-| `0`   | `number` |     `Error` | 
+| `1`   | `number` |   `Success` |
+| `0`   | `number` |     `Error` |
 
 ### Auction
 | value   |   Type    |         Description |
 |---------|:---------:|--------------------:|
-| `true`  | `Boolean` | `Auction on market` | 
+| `true`  | `Boolean` | `Auction on market` |
 | `false` | `Boolean` | `Listing on market` |
 
 ### Status Register Whitelist IGO
 | value |   Type   |                   Description |
 |-------|:--------:|------------------------------:|
-| `0`   | `Number` | `User not register whitelist` | 
+| `0`   | `Number` | `User not register whitelist` |
 | `853` | `Number` |         `User verified email` |
 | `858` | `Number` |               `User registed` |
 
 ### IGO Type
 | value |   Type   |      Description |
 |-------|:--------:|-----------------:|
-| `0`   | `number` |        `Default` | 
-| `1`   | `number` |            `Box` | 
+| `0`   | `number` |        `Default` |
+| `1`   | `number` |            `Box` |
 | `2`   | `number` | `Box Minted NFT` |
+
+### Sort By
+| value     |   Type   |       Description |
+|-----------|:--------:|------------------:|
+| `price`   | `String` |   `Sort by price` |
+| `listing` | `String` | `Sort by listing` |
+| `token`   | `String` |   `Sort by token` |
+
+### Sort Type
+| value   |   Type   |  Description |
+|---------|:--------:|-------------:|
+| `DESC`  | `String` | `Descending` |
+| `ASC`   | `String` |  `Ascending` |
