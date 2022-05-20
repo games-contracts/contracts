@@ -22,5 +22,5 @@
 
 #### Example
 ```json
-{"name":"silver","image":"https://e89d8b6f30bd225.kcdn.vn/chainverse/market/20220516T041745Z-310255777-box1.png","attributes":[{"trait_type":"type","value":0}]}
+{"name":"silver","image":"https://xxx/20220516T041745Z-310255777-box1.png","attributes":[{"trait_type":"type","value":0}]}
 ```
