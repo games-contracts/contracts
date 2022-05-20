@@ -29,14 +29,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ERC721__factory>;
     getContractFactory(
-      name: "ERC721Enumerable",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ERC721Enumerable__factory>;
-    getContractFactory(
-      name: "IERC721Enumerable",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IERC721Enumerable__factory>;
-    getContractFactory(
       name: "IERC721Metadata",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC721Metadata__factory>;
@@ -56,14 +48,6 @@ declare module "hardhat/types/runtime" {
       name: "IERC165",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC165__factory>;
-    getContractFactory(
-      name: "AccessControl",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.AccessControl__factory>;
-    getContractFactory(
-      name: "IAccessControl",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IAccessControl__factory>;
     getContractFactory(
       name: "ERC20",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -77,81 +61,45 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC20__factory>;
     getContractFactory(
-      name: "ERC721",
+      name: "ArenaBox",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ERC721__factory>;
+    ): Promise<Contracts.ArenaBox__factory>;
     getContractFactory(
-      name: "IERC721Metadata",
+      name: "INFTContract",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IERC721Metadata__factory>;
+    ): Promise<Contracts.INFTContract__factory>;
     getContractFactory(
-      name: "IERC721",
+      name: "ArenaNFT",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IERC721__factory>;
+    ): Promise<Contracts.ArenaNFT__factory>;
     getContractFactory(
-      name: "IERC721Receiver",
+      name: "BoxShop",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IERC721Receiver__factory>;
+    ): Promise<Contracts.BoxShop__factory>;
     getContractFactory(
-      name: "ERC165",
+      name: "IArenaBox",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ERC165__factory>;
+    ): Promise<Contracts.IArenaBox__factory>;
     getContractFactory(
-      name: "IERC165",
+      name: "IMarketServicePartnerV1",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IERC165__factory>;
+    ): Promise<Contracts.IMarketServicePartnerV1__factory>;
     getContractFactory(
-      name: "ADTHero",
+      name: "IMarketServiceReadableV1",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ADTHero__factory>;
+    ): Promise<Contracts.IMarketServiceReadableV1__factory>;
     getContractFactory(
-      name: "ADTHShop",
+      name: "IMarketServiceUserV1",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ADTHShop__factory>;
+    ): Promise<Contracts.IMarketServiceUserV1__factory>;
     getContractFactory(
-      name: "IADTHero",
+      name: "IMarketServiceV1",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IADTHero__factory>;
-    getContractFactory(
-      name: "BreedingService",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.BreedingService__factory>;
-    getContractFactory(
-      name: "IERC721",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IERC721__factory>;
-    getContractFactory(
-      name: "Call",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.Call__factory>;
-    getContractFactory(
-      name: "Party",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.Party__factory>;
-    getContractFactory(
-      name: "ChainVerseEvent",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ChainVerseEvent__factory>;
-    getContractFactory(
-      name: "ClaimToken",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ClaimToken__factory>;
-    getContractFactory(
-      name: "Log",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.Log__factory>;
-    getContractFactory(
-      name: "Revert",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.Revert__factory>;
+    ): Promise<Contracts.IMarketServiceV1__factory>;
     getContractFactory(
       name: "Token",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Token__factory>;
-    getContractFactory(
-      name: "WoFNFT",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.WoFNFT__factory>;
 
     // default types
     getContractFactory(
