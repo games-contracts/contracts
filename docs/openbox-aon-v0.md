@@ -1,0 +1,67 @@
+## SIGN SERVICE API
+
+[[_TOC_]]
+### API Sign Services
+
+- Version: `1`
+- Endpoint: `/aon/sign-services`
+- Method: `POST`
+- Params:
+
+| Name        | Require? |      Type |                                                                      Description |
+|-------------|:-------------:|----------:|---------------------------------------------------------------------------------:|
+| `tx`        | [x] |  `String` |                                       Partner transaction id/hash (unique in DB) |
+| `data`      | [x] |  `Object` |                                                                Data of signature |
+| `type`      | [x] |  `String` |                                                                Type of signature |
+| `contract`  | [x] | `Address` |                                                Contract address verify signature |
+| `signature` | [x] |  `String` | sign `Payload` with [EIP-712 format](#eip-712-format), types depend on game info |
+
+- Response: `JSON Object`
+
+| Name        |   Type   |              Description |
+|-------------|:--------:|-------------------------:|
+| `error_code` | `Number` | 0: success, others: fail |
+| `messsage`  | `String` |         response message |
+
+#### EIP-712 format
+
+| Name               |                 Type                 |     Description |
+|--------------------|:------------------------------------:|----------------:|
+| `domain`           |               `Object`               |            `{}` |
+| `types`            |               `Object`               | Depends on Game |
+| `value`            |               `Object`               |    Data to sign |
+
+##### Types `OPEN_BOX`
+
+```json
+{
+  "Info": [
+    {
+      "name": "user",
+      "type": "address"
+    },
+    {
+      "name": "boxId",
+      "type": "uint256"
+    },
+    {
+      "name": "heroId",
+      "type": "string"
+    }
+  ],
+  "Payload": [
+    {
+      "name": "tx",
+      "type": "string"
+    },
+    {
+      "name": "type",
+      "type": "string"
+    },
+    {
+      "name": "data",
+      "type": "Info"
+    }
+  ]
+}
+```
