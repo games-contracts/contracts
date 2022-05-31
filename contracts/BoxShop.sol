@@ -153,7 +153,7 @@ contract BoxShop is AccessControl {
 
     // ============ EMERGENCY FUNCTION ==============
 
-    function forceReturnERC20(
+    function emergencyWithdrawERC20(
         address token,
         uint amount,
         address sendTo
@@ -161,12 +161,12 @@ contract BoxShop is AccessControl {
         IERC20(token).transfer(sendTo, amount);
     }
 
-    function forceReturnNative(uint amount, address payable sendTo) external onlyRole(OWNER_ROLE) {
+    function emergencyWithdrawNative(uint amount, address payable sendTo) external onlyRole(OWNER_ROLE) {
         (bool success,) = sendTo.call{value : amount}("");
         require(success, "withdraw failed");
     }
 
-    function forceReturnERC721(
+    function emergencyWithdrawERC721(
         address sendTo,
         address token,
         uint tokenId
