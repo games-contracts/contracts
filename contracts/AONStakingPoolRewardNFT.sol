@@ -37,7 +37,6 @@ contract AONStakingPoolRewardNFT is AccessControl, ReentrancyGuard {
     mapping(address => mapping(uint => bool)) public _userStaked;
     mapping(address => mapping(uint => uint)) public _unStakedTime;
 
-    event LogUpdatePackage(Package package);
     event LogAddPackage(Package package);
     event LogStaked(address user, Package package, uint time);
     event LogWithdraw(address user, uint packageId, uint time);
@@ -86,17 +85,6 @@ contract AONStakingPoolRewardNFT is AccessControl, ReentrancyGuard {
         emit LogAddPackage(package);
     }
 
-    function updatePackage(
-        uint packageId,
-        uint lockTime,
-        IERC721 rewardNFT
-    ) external activePackage(packageId) onlyRole(OWNER_ROLE)
-    {
-        Package storage package = _packages[packageId];
-        package.lockTime = lockTime;
-        package.rewardNFT = rewardNFT;
-        emit LogUpdatePackage(package);
-    }
 
     function toggleBoxType(uint packageId) public onlyRole(OWNER_ROLE) {
         _packages[packageId].isActive = !_packages[packageId].isActive;
@@ -181,5 +169,4 @@ contract AONStakingPoolRewardNFT is AccessControl, ReentrancyGuard {
     ) external onlyRole(OWNER_ROLE) {
         IERC721(token).transferFrom(address(this), sendTo, tokenId);
     }
-
 }
