@@ -49,6 +49,14 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC165__factory>;
     getContractFactory(
+      name: "AccessControl",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.AccessControl__factory>;
+    getContractFactory(
+      name: "IAccessControl",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IAccessControl__factory>;
+    getContractFactory(
       name: "ERC20",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ERC20__factory>;
@@ -60,6 +68,38 @@ declare module "hardhat/types/runtime" {
       name: "IERC20",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC20__factory>;
+    getContractFactory(
+      name: "ERC721",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ERC721__factory>;
+    getContractFactory(
+      name: "IERC721Metadata",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC721Metadata__factory>;
+    getContractFactory(
+      name: "IERC721",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC721__factory>;
+    getContractFactory(
+      name: "IERC721Receiver",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC721Receiver__factory>;
+    getContractFactory(
+      name: "ERC165",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ERC165__factory>;
+    getContractFactory(
+      name: "IERC165",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC165__factory>;
+    getContractFactory(
+      name: "AONStakingPoolRewardNFT",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.AONStakingPoolRewardNFT__factory>;
+    getContractFactory(
+      name: "AONStakingPoolRewardToken",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.AONStakingPoolRewardToken__factory>;
     getContractFactory(
       name: "ArenaBox",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -96,6 +136,14 @@ declare module "hardhat/types/runtime" {
       name: "IMarketServiceV1",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IMarketServiceV1__factory>;
+    getContractFactory(
+      name: "LPWrapper",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.LPWrapper__factory>;
+    getContractFactory(
+      name: "NFT",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.NFT__factory>;
     getContractFactory(
       name: "Token",
       signerOrOptions?: ethers.Signer | FactoryOptions
