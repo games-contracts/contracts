@@ -10,7 +10,7 @@ import "./utils/LPWrapper.sol";
 
 contract AONStakingPoolRewardToken is LPWrapper, AccessControl, ReentrancyGuard {
     bytes32 public constant OWNER_ROLE = keccak256("OWNER_ROLE");
-    uint public constant SECONDS_MONTH = 30 * 86_400;
+    uint public constant SECONDS_MONTH = 30 days;
     uint public constant PRECISION_FACTOR = 10 ** 12;
 
     IERC20 public stakeToken;
@@ -28,20 +28,23 @@ contract AONStakingPoolRewardToken is LPWrapper, AccessControl, ReentrancyGuard 
     // Duration lock time
     uint public lockTime;
     // Harvest at time
-    uint public harvestTime;
+    uint public vestTime;
     // MPR decimals
     uint public mpr;
 
-    event RewardAdded(uint reward);
-    event Staked(address indexed user, uint amount, uint time);
-    event Withdrawn(address indexed user, uint time);
-    event RewardPaid(address indexed user, uint reward, uint time);
+    event LogRewardAdded(uint reward);
+    event LogStaked(address indexed user, uint amount, uint time);
+    event LogWithdraw(address indexed user, uint time);
+    event LogRewardPaid(address indexed user, uint reward, uint time);
+    event LogRewardPending(address indexed user, uint reward, uint time);
 
 
     struct UserInfo {
         uint unlockTime;
+        uint vestingTime;
         uint lastEarnTime;
         uint earnedAmount;
+        uint pending;
     }
 
     uint public totalUsers;
@@ -52,14 +55,14 @@ contract AONStakingPoolRewardToken is LPWrapper, AccessControl, ReentrancyGuard 
      * @param _stakedToken: Address of stake token
      * @param _startTime: Start Pool at time
      * @param _lockTime: can unlock token after time
-     * @param _harvestTime: vesting token after time
+     * @param _vestTime: vesting token after time
      * @param _mpr: Monthly Percentage Rate
      */
     constructor(string memory _name,
         address _stakedToken,
         uint _startTime,
         uint _lockTime,
-        uint _harvestTime,
+        uint _vestTime,
         uint _mpr
     )
     LPWrapper(_name, _stakedToken) {
@@ -69,7 +72,7 @@ contract AONStakingPoolRewardToken is LPWrapper, AccessControl, ReentrancyGuard 
 
         startTime = _startTime;
         lockTime = _lockTime;
-        harvestTime = _harvestTime;
+        vestTime = _vestTime;
 
         mpr = _mpr;
 
@@ -119,9 +122,10 @@ contract AONStakingPoolRewardToken is LPWrapper, AccessControl, ReentrancyGuard 
 
         users[msg.sender].lastEarnTime = block.timestamp;
         users[msg.sender].unlockTime = block.timestamp + lockTime;
+        users[msg.sender].vestingTime = block.timestamp + vestTime;
         super.stake(_amount);
 
-        emit Staked(msg.sender, _amount, block.timestamp);
+        emit LogStaked(msg.sender, _amount, block.timestamp);
     }
 
     function withdraw() public override nonReentrant {
@@ -132,7 +136,7 @@ contract AONStakingPoolRewardToken is LPWrapper, AccessControl, ReentrancyGuard 
         super.withdraw();
 
         delete users[msg.sender];
-        emit Withdrawn(msg.sender, block.timestamp);
+        emit LogWithdraw(msg.sender, block.timestamp);
     }
 
     function lastTimeRewardApplicable() public view returns (uint) {
@@ -143,16 +147,22 @@ contract AONStakingPoolRewardToken is LPWrapper, AccessControl, ReentrancyGuard 
         UserInfo memory _user = users[_account];
         uint progress = (mpr * (lastTimeRewardApplicable() - _user.lastEarnTime) * PRECISION_FACTOR) / (SECONDS_MONTH * lockTime);
         return
-        (balanceOf(_account) * progress / PRECISION_FACTOR) - _user.earnedAmount;
+        (balanceOf(_account) * progress / PRECISION_FACTOR) + _user.pending;
     }
 
     function harvest() public {
         uint reward = earned(msg.sender);
         if (reward > 0) {
-            users[msg.sender].earnedAmount += reward;
             users[msg.sender].lastEarnTime = block.timestamp;
-            stakedToken.transfer(msg.sender, reward);
-            emit RewardPaid(msg.sender, reward, block.timestamp);
+            if (users[msg.sender].vestingTime > block.timestamp) {
+                users[msg.sender].pending += reward;
+                emit LogRewardPending(msg.sender, reward, block.timestamp);
+            } else {
+                users[msg.sender].pending = 0;
+                users[msg.sender].earnedAmount += reward;
+                stakedToken.transfer(msg.sender, reward);
+                emit LogRewardPaid(msg.sender, reward, block.timestamp);
+            }
         }
     }
 

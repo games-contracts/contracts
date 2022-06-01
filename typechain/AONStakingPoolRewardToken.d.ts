@@ -33,7 +33,6 @@ interface AONStakingPoolRewardTokenInterface extends ethers.utils.Interface {
     "getRoleAdmin(bytes32)": FunctionFragment;
     "grantRole(bytes32,address)": FunctionFragment;
     "harvest()": FunctionFragment;
-    "harvestTime()": FunctionFragment;
     "hasRole(bytes32,address)": FunctionFragment;
     "lastTimeRewardApplicable()": FunctionFragment;
     "limitStakedPerUser()": FunctionFragment;
@@ -53,6 +52,7 @@ interface AONStakingPoolRewardTokenInterface extends ethers.utils.Interface {
     "totalSupply()": FunctionFragment;
     "totalUsers()": FunctionFragment;
     "users(address)": FunctionFragment;
+    "vestTime()": FunctionFragment;
     "withdraw()": FunctionFragment;
   };
 
@@ -95,10 +95,6 @@ interface AONStakingPoolRewardTokenInterface extends ethers.utils.Interface {
     values: [BytesLike, string]
   ): string;
   encodeFunctionData(functionFragment: "harvest", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "harvestTime",
-    values?: undefined
-  ): string;
   encodeFunctionData(
     functionFragment: "hasRole",
     values: [BytesLike, string]
@@ -157,6 +153,7 @@ interface AONStakingPoolRewardTokenInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "users", values: [string]): string;
+  encodeFunctionData(functionFragment: "vestTime", values?: undefined): string;
   encodeFunctionData(functionFragment: "withdraw", values?: undefined): string;
 
   decodeFunctionResult(
@@ -192,10 +189,6 @@ interface AONStakingPoolRewardTokenInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "grantRole", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "harvest", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "harvestTime",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "hasRole", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "lastTimeRewardApplicable",
@@ -239,25 +232,28 @@ interface AONStakingPoolRewardTokenInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "totalUsers", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "users", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "vestTime", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "withdraw", data: BytesLike): Result;
 
   events: {
-    "RewardAdded(uint256)": EventFragment;
-    "RewardPaid(address,uint256,uint256)": EventFragment;
+    "LogRewardAdded(uint256)": EventFragment;
+    "LogRewardPaid(address,uint256,uint256)": EventFragment;
+    "LogRewardPending(address,uint256,uint256)": EventFragment;
+    "LogStaked(address,uint256,uint256)": EventFragment;
+    "LogWithdraw(address,uint256)": EventFragment;
     "RoleAdminChanged(bytes32,bytes32,bytes32)": EventFragment;
     "RoleGranted(bytes32,address,address)": EventFragment;
     "RoleRevoked(bytes32,address,address)": EventFragment;
-    "Staked(address,uint256,uint256)": EventFragment;
-    "Withdrawn(address,uint256)": EventFragment;
   };
 
-  getEvent(nameOrSignatureOrTopic: "RewardAdded"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "RewardPaid"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "LogRewardAdded"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "LogRewardPaid"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "LogRewardPending"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "LogStaked"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "LogWithdraw"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleAdminChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleGranted"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleRevoked"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "Staked"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "Withdrawn"): EventFragment;
 }
 
 export class AONStakingPoolRewardToken extends BaseContract {
@@ -349,8 +345,6 @@ export class AONStakingPoolRewardToken extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    harvestTime(overrides?: CallOverrides): Promise<[BigNumber]>;
-
     hasRole(
       role: BytesLike,
       account: string,
@@ -409,12 +403,16 @@ export class AONStakingPoolRewardToken extends BaseContract {
       arg0: string,
       overrides?: CallOverrides
     ): Promise<
-      [BigNumber, BigNumber, BigNumber] & {
+      [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
         unlockTime: BigNumber;
+        vestingTime: BigNumber;
         lastEarnTime: BigNumber;
         earnedAmount: BigNumber;
+        pending: BigNumber;
       }
     >;
+
+    vestTime(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     withdraw(
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -465,8 +463,6 @@ export class AONStakingPoolRewardToken extends BaseContract {
   harvest(
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
-
-  harvestTime(overrides?: CallOverrides): Promise<BigNumber>;
 
   hasRole(
     role: BytesLike,
@@ -526,12 +522,16 @@ export class AONStakingPoolRewardToken extends BaseContract {
     arg0: string,
     overrides?: CallOverrides
   ): Promise<
-    [BigNumber, BigNumber, BigNumber] & {
+    [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
       unlockTime: BigNumber;
+      vestingTime: BigNumber;
       lastEarnTime: BigNumber;
       earnedAmount: BigNumber;
+      pending: BigNumber;
     }
   >;
+
+  vestTime(overrides?: CallOverrides): Promise<BigNumber>;
 
   withdraw(
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -580,8 +580,6 @@ export class AONStakingPoolRewardToken extends BaseContract {
     ): Promise<void>;
 
     harvest(overrides?: CallOverrides): Promise<void>;
-
-    harvestTime(overrides?: CallOverrides): Promise<BigNumber>;
 
     hasRole(
       role: BytesLike,
@@ -638,22 +636,26 @@ export class AONStakingPoolRewardToken extends BaseContract {
       arg0: string,
       overrides?: CallOverrides
     ): Promise<
-      [BigNumber, BigNumber, BigNumber] & {
+      [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
         unlockTime: BigNumber;
+        vestingTime: BigNumber;
         lastEarnTime: BigNumber;
         earnedAmount: BigNumber;
+        pending: BigNumber;
       }
     >;
+
+    vestTime(overrides?: CallOverrides): Promise<BigNumber>;
 
     withdraw(overrides?: CallOverrides): Promise<void>;
   };
 
   filters: {
-    RewardAdded(
+    LogRewardAdded(
       reward?: null
     ): TypedEventFilter<[BigNumber], { reward: BigNumber }>;
 
-    RewardPaid(
+    LogRewardPaid(
       user?: string | null,
       reward?: null,
       time?: null
@@ -661,6 +663,29 @@ export class AONStakingPoolRewardToken extends BaseContract {
       [string, BigNumber, BigNumber],
       { user: string; reward: BigNumber; time: BigNumber }
     >;
+
+    LogRewardPending(
+      user?: string | null,
+      reward?: null,
+      time?: null
+    ): TypedEventFilter<
+      [string, BigNumber, BigNumber],
+      { user: string; reward: BigNumber; time: BigNumber }
+    >;
+
+    LogStaked(
+      user?: string | null,
+      amount?: null,
+      time?: null
+    ): TypedEventFilter<
+      [string, BigNumber, BigNumber],
+      { user: string; amount: BigNumber; time: BigNumber }
+    >;
+
+    LogWithdraw(
+      user?: string | null,
+      time?: null
+    ): TypedEventFilter<[string, BigNumber], { user: string; time: BigNumber }>;
 
     RoleAdminChanged(
       role?: BytesLike | null,
@@ -688,20 +713,6 @@ export class AONStakingPoolRewardToken extends BaseContract {
       [string, string, string],
       { role: string; account: string; sender: string }
     >;
-
-    Staked(
-      user?: string | null,
-      amount?: null,
-      time?: null
-    ): TypedEventFilter<
-      [string, BigNumber, BigNumber],
-      { user: string; amount: BigNumber; time: BigNumber }
-    >;
-
-    Withdrawn(
-      user?: string | null,
-      time?: null
-    ): TypedEventFilter<[string, BigNumber], { user: string; time: BigNumber }>;
   };
 
   estimateGas: {
@@ -752,8 +763,6 @@ export class AONStakingPoolRewardToken extends BaseContract {
     harvest(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
-
-    harvestTime(overrides?: CallOverrides): Promise<BigNumber>;
 
     hasRole(
       role: BytesLike,
@@ -810,6 +819,8 @@ export class AONStakingPoolRewardToken extends BaseContract {
     totalUsers(overrides?: CallOverrides): Promise<BigNumber>;
 
     users(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    vestTime(overrides?: CallOverrides): Promise<BigNumber>;
 
     withdraw(
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -873,8 +884,6 @@ export class AONStakingPoolRewardToken extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    harvestTime(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     hasRole(
       role: BytesLike,
       account: string,
@@ -937,6 +946,8 @@ export class AONStakingPoolRewardToken extends BaseContract {
       arg0: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    vestTime(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     withdraw(
       overrides?: Overrides & { from?: string | Promise<string> }
