@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
-import "./@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 
 contract AONStakingPoolRewardNFT is AccessControl, ReentrancyGuard {
@@ -17,6 +17,11 @@ contract AONStakingPoolRewardNFT is AccessControl, ReentrancyGuard {
     string public name;
 
     Counters.Counter private _packageIds;
+    Counters.Counter private _stakedIds;
+
+    mapping(address => EnumerableSet.UintSet) private _userStakedIds;
+    mapping(uint => EnumerableSet.UintSet) private _rewardTokenIds;
+
 
     IERC20 public stakeToken;
 
@@ -28,14 +33,17 @@ contract AONStakingPoolRewardNFT is AccessControl, ReentrancyGuard {
         uint totalStaked;
         uint limitStaked;
         IERC721 rewardNFT;
-        uint[] rewardTokenIds;
+    }
+
+    struct StakedInfo {
+        bool withdraw;
+        uint withdrawTime;
+        uint packageId;
+        address user;
     }
 
     mapping(uint => Package) private _packages;
-
-
-    mapping(address => mapping(uint => bool)) public _userStaked;
-    mapping(address => mapping(uint => uint)) public _unStakedTime;
+    mapping(uint => StakedInfo) public _staked;
 
     event LogAddPackage(Package package);
     event LogStaked(address user, Package package, uint time);
@@ -47,7 +55,7 @@ contract AONStakingPoolRewardNFT is AccessControl, ReentrancyGuard {
         address _stakedToken
     )
     {
-        require(_stakedToken != address(0), "AONP: Invalid address params");
+        require(_stakedToken != address(0), "invalid address params");
         name = _name;
         stakeToken = IERC20(_stakedToken);
 
@@ -90,63 +98,94 @@ contract AONStakingPoolRewardNFT is AccessControl, ReentrancyGuard {
         _packages[packageId].isActive = !_packages[packageId].isActive;
     }
 
-    function stake(uint packageId) public activePackage(packageId) nonReentrant {
+    function stake(uint packageId) public activePackage(packageId) nonReentrant returns (uint) {
         Package memory _package = _packages[packageId];
         require(_package.limitStaked > _package.totalStaked, "out of rewards");
-        require(_userStaked[msg.sender][packageId] == false, "cannot stake more");
 
-        _userStaked[msg.sender][packageId] = true;
-        _unStakedTime[msg.sender][packageId] = block.timestamp + _package.lockTime;
+        uint stakedId = _stakedIds.current();
+        _stakedIds.increment();
+        StakedInfo memory _stakedInfo;
+
+        _stakedInfo.packageId = packageId;
+        _stakedInfo.user = msg.sender;
+        _stakedInfo.withdrawTime = block.timestamp + _package.lockTime;
+        _staked[stakedId] = _stakedInfo;
+
+
+        EnumerableSet.UintSet storage set = _userStakedIds[msg.sender];
+        EnumerableSet.add(set, stakedId);
 
         bool transferred = stakeToken.transferFrom(msg.sender, address(this), _package.amountStake);
         require(transferred, "cannot transfer");
 
         _packages[packageId].totalStaked++;
         emit LogStaked(msg.sender, _package, block.timestamp);
+        return stakedId;
     }
 
-    function withdraw(uint packageId) public nonReentrant {
-        Package memory _package = _packages[packageId];
-        require(_unStakedTime[msg.sender][packageId] <= block.timestamp, "AONP: Cannot unstake now");
-        require(_userStaked[msg.sender][packageId], "nothing to withdraw");
-        _userStaked[msg.sender][packageId] = false;
-
-        bool transferred = stakeToken.transfer(msg.sender, _packages[packageId].amountStake);
+    function withdraw(uint stakedId) public nonReentrant {
+        StakedInfo storage _stakedInfo = _staked[stakedId];
+        require(!_stakedInfo.withdraw && _stakedInfo.user == msg.sender, "invalid stakedId");
+        require(_stakedInfo.withdrawTime < block.timestamp, "cannot withdraw now");
+        _stakedInfo.withdraw = true;
+        Package memory _package = _packages[_stakedInfo.packageId];
+        bool transferred = stakeToken.transfer(msg.sender, _package.amountStake);
         require(transferred, "cannot transfer");
-        uint tokenId = _package.rewardTokenIds[_package.rewardTokenIds.length - 1];
-        _packages[packageId].rewardTokenIds.pop();
+
+        EnumerableSet.UintSet storage _rewardIds = _rewardTokenIds[_stakedInfo.packageId];
+
+        uint tokenId = EnumerableSet.at(_rewardIds, _rewardIds.length() - 1);
+        EnumerableSet.remove(_rewardIds, tokenId);
+
         _package.rewardNFT.transferFrom(address(this), msg.sender, tokenId);
-        emit LogWithdraw(msg.sender, packageId, block.timestamp);
+
+        emit LogWithdraw(msg.sender, stakedId, block.timestamp);
     }
     // ============ OPERATION FUNCTION ==============
     function initRewardIds(uint packageId, uint[] calldata tokenIds) activePackage(packageId) external onlyRole(OWNER_ROLE) {
-        require(_packages[packageId].rewardTokenIds.length == 0, "rewards has been init");
+        //        require(_packages[packageId].rewardTokenIds.length == 0, "rewards has been init");
+        EnumerableSet.UintSet storage set = _rewardTokenIds[packageId];
         uint length = tokenIds.length;
         uint count;
         for (uint i; i < length; ++i) {
             bool isOwnerOf = address(this) == _packages[packageId].rewardNFT.ownerOf(tokenIds[i]);
             if (isOwnerOf) {
                 ++count;
-                _packages[packageId].rewardTokenIds.push(tokenIds[i]);
+                EnumerableSet.add(set, tokenIds[i]);
             }
         }
-        _packages[packageId].limitStaked = count;
+        _packages[packageId].limitStaked += count;
         emit LogInitRewardIds(packageId, tokenIds);
     }
 
     function initRewardIndex(uint packageId, uint fromId, uint toId) activePackage(packageId) external onlyRole(OWNER_ROLE) {
-        require(_packages[packageId].rewardTokenIds.length == 0, "rewards has been init");
-        uint count;
-        for (uint i = fromId; i <= toId; ++i) {
-            bool isOwnerOf = address(this) == _packages[packageId].rewardNFT.ownerOf(i);
-            if (isOwnerOf) {
-                ++count;
-                _packages[packageId].rewardTokenIds.push(i);
-            }
-        }
-        _packages[packageId].limitStaked = count;
+        //        require(_packages[packageId].rewardTokenIds.length == 0, "rewards has been init");
+        //        uint count;
+        //        for (uint i = fromId; i <= toId; ++i) {
+        //            bool isOwnerOf = address(this) == _packages[packageId].rewardNFT.ownerOf(i);
+        //            if (isOwnerOf) {
+        //                ++count;
+        //                _packages[packageId].rewardTokenIds.push(i);
+        //            }
+        //        }
+        //        _packages[packageId].limitStaked = count;
         emit LogInitRewardIndex(packageId, fromId, toId);
     }
+    //
+    function getRewardIds(uint packageId) public view returns (uint[] memory tokenIds) {
+        tokenIds = new uint[](_rewardTokenIds[packageId].length());
+        for (uint256 i; i < _rewardTokenIds[packageId].length(); ++i) {
+            tokenIds[i] = uint256(_rewardTokenIds[packageId]._inner._values[i]);
+        }
+    }
+
+    function getStakedIds(address user) public view returns (uint[] memory stakedIds) {
+        stakedIds = new uint[](_userStakedIds[user].length());
+        for (uint256 i; i < _userStakedIds[user].length(); ++i) {
+            stakedIds[i] = uint256(_userStakedIds[user]._inner._values[i]);
+        }
+    }
+
     // ============ EMERGENCY FUNCTION ==============
 
     function emergencyWithdrawERC20(
