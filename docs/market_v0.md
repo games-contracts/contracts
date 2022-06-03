@@ -1,4 +1,4 @@
-## MARKET API
+## PARTNER API
 
 [[_TOC_]]
 
@@ -18,19 +18,16 @@
 
 - Query Parameters:
 
-| Name        | Require? |                    Type |         Description |
-|-------------|:--------:|------------------------:|--------------------:|
-| `page`      |          |                `Number` | This is page number |
-| `page_size` |          |                `Number` |   This is page size |
-| `name`      |          |                `String` |        Name of item |
-| `currency`  |          |                `String` |      Currency token |
-| `price_min` |          |                `Number` |           Price min |
-| `price_max` |          |                `Number` |           Price max |
-| `gender`    |          |          `Array String` |  List gender filter |
-| `rarity`    |          |          `Array String` |  List rarity filter |
-| `empire`    |          |          `Array String` |  List empire filter |
-| `sort_by`   |          |     [Sort By](#sort-by) |             Sort by |
-| `sort_type` |          | [Sort Type](#sort-type) |           Sort type |
+| Name                  | Require? |                      Type |         Description |
+|-----------------------|:--------:|--------------------------:|--------------------:|
+| `page`                |          |                  `Number` | This is page number |
+| `page_size`           |          |                  `Number` |   This is page size |
+| `name`                |          |                  `String` |        Name of item |
+| `currency`            |          |                  `String` |      Currency token |
+| `price_min`           |          |                  `Number` |           Price min |
+| `price_max`           |          |                  `Number` |           Price max |
+| `sort_by`             |          | [Sorting By](#sorting-by) |          Sorting by |
+| `sort_type`           |          |       [Sorting](#sorting) |        Sorting type |
 
 - Response: `JSON Object`
 
@@ -122,7 +119,7 @@
 
 - Version: `{1.0}`
 - Endpoint: `/v1/partner/asset/tokens`
-- Authentication: [Signature Partner](#signature-partner)
+- Authentication: [Signature](#signature-myasset)
 - Method: `GET`
 - PathParameters: None
 
@@ -261,7 +258,44 @@
 | `data.open`  | [Array Object](#game-igo) |  List Games open |
 | `data.end`   | [Array Object](#game-igo) |   List Games end |
 
+### API Get List Filters Market
+> Description: This is API Get List Filters Market
+
+- Version: `{1.0}`
+- Endpoint: `/v1/partner/{partner_id}/market/filters`
+- Authentication: None
+- Method: `GET`
+- Query Parameters:
+
+| Name   | Require? |                Type |       Description |
+|--------|:--------:|--------------------:|------------------:|
+| `nfts` |          | `Array Nft Address` |  List nft address |
+
+- Path Parameters:
+
+| Name         | Require? |     Type | Description |
+|--------------|:--------:|---------:|------------:|
+| `partner_id` |   [x]    | `String` |  Partner id |
+
+- Response: `JSON Object`
+
+| Name             |           Type            |      Description |
+|------------------|:-------------------------:|-----------------:|
+| `error_code`     |         `Number`          |       Error code |
+| `message`        |         `String`          | Message response |
+| `data`           |       `Json Object`       |    Data Response |
+| `data.price_max` |         `Number`          |        Price max |
+| `data.price_min` |         `Number`          |        Price min |
+
 ## Type
+### Signature MyAsset
+- Headers:
+
+| Name              |   Type   |                             Description |
+|-------------------|:--------:|----------------------------------------:|
+| `x-address`       | `String` |                          `User address` |
+| `x-partner`       | `String` |                            `Partner Id` |
+
 ### Signature Partner
 - Headers:
 
@@ -367,6 +401,7 @@
 |-----------|:--------:|-----------------------:|
 | `price`   | `string` |        `Sort by price` |
 | `listing` | `string` | `Sort by listing time` |
+| `token`   | `string` |     `Sort by token id` |
 
 ### Response Status
 | value |   Type   | Description |
@@ -393,16 +428,3 @@
 | `0`   | `number` |        `Default` |
 | `1`   | `number` |            `Box` |
 | `2`   | `number` | `Box Minted NFT` |
-
-### Sort By
-| value     |   Type   |       Description |
-|-----------|:--------:|------------------:|
-| `price`   | `String` |   `Sort by price` |
-| `listing` | `String` | `Sort by listing` |
-| `token`   | `String` |   `Sort by token` |
-
-### Sort Type
-| value   |   Type   |  Description |
-|---------|:--------:|-------------:|
-| `DESC`  | `String` | `Descending` |
-| `ASC`   | `String` |  `Ascending` |
