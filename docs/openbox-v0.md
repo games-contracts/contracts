@@ -1,10 +1,11 @@
-## SIGN SERVICE API
+## SIGN SERVICE
 
 [[_TOC_]]
+
 ### API Sign Services
 
 - Version: `1`
-- Endpoint: `/aon/sign-services`
+- Endpoint: `/sign-services`
 - Method: `POST`
 - Params:
 
@@ -22,6 +23,24 @@
 |-------------|:--------:|-------------------------:|
 | `error_code` | `Number` | 0: success, others: fail |
 | `messsage`  | `String` |         response message |
+
+### Webhook Sign Services
+
+- Endpoint: `/sign-services`
+- Method: `POST`
+- Headers:
+
+| Name          |   Type   |                                                  Description |
+|---------------|:--------:|-------------------------------------------------------------:|
+| `x-signature` | `String` |                                       sign `tx` with signers |
+
+- Params:
+
+| Name        | Require? |      Type |                                Description |
+|-------------|:-------------:|----------:|-------------------------------------------:|
+| `tx`        | [x] |  `String` | Partner transaction id/hash (unique in DB) |
+| `data`      | [x] |  `Object` |                          Data of signature |
+| `signature` | [x] |  `String` |                signature for request of tx |
 
 #### EIP-712 format
 
@@ -65,3 +84,18 @@
   ]
 }
 ```
+
+##### Domain
+
+```json
+{
+  "chainId": 0,
+  "name": "ChainVerse Signer",
+  "version": "1",
+  "verifyingContract": "0x0000000000000000000000000000000000000000"
+}
+```
+
+
+
+
