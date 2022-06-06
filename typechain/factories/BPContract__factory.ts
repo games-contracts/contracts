@@ -4,38 +4,43 @@
 
 import { Contract, Signer, utils } from "ethers";
 import { Provider } from "@ethersproject/providers";
-import type { IArenaBox, IArenaBoxInterface } from "../IArenaBox";
+import type { BPContract, BPContractInterface } from "../BPContract";
 
 const _abi = [
   {
     inputs: [
       {
         internalType: "address",
-        name: "user",
+        name: "sender",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "receiver",
         type: "address",
       },
       {
         internalType: "uint256",
-        name: "quantity",
+        name: "amount",
         type: "uint256",
       },
     ],
-    name: "mintMany",
+    name: "protect",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
   },
 ];
 
-export class IArenaBox__factory {
+export class BPContract__factory {
   static readonly abi = _abi;
-  static createInterface(): IArenaBoxInterface {
-    return new utils.Interface(_abi) as IArenaBoxInterface;
+  static createInterface(): BPContractInterface {
+    return new utils.Interface(_abi) as BPContractInterface;
   }
   static connect(
     address: string,
     signerOrProvider: Signer | Provider
-  ): IArenaBox {
-    return new Contract(address, _abi, signerOrProvider) as IArenaBox;
+  ): BPContract {
+    return new Contract(address, _abi, signerOrProvider) as BPContract;
   }
 }

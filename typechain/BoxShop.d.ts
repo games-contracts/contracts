@@ -26,7 +26,7 @@ interface BoxShopInterface extends ethers.utils.Interface {
     "OPERATION_ROLE()": FunctionFragment;
     "OWNER_ROLE()": FunctionFragment;
     "_box()": FunctionFragment;
-    "addPackage(uint256,uint256,uint256,uint256,address,uint256[],uint256[],string)": FunctionFragment;
+    "addPackage(uint256,uint256,uint256,uint256,address,address[],uint256[],string)": FunctionFragment;
     "buy(uint256,uint256)": FunctionFragment;
     "emergencyWithdrawERC20(address,uint256,address)": FunctionFragment;
     "emergencyWithdrawERC721(address,address,uint256)": FunctionFragment;
@@ -41,7 +41,7 @@ interface BoxShopInterface extends ethers.utils.Interface {
     "setBox(address)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
     "toggleBoxType(uint256)": FunctionFragment;
-    "updatePackage(uint256,uint256,uint256,uint256,uint256,address,uint256[],uint256[],string)": FunctionFragment;
+    "updatePackage(uint256,uint256,uint256,uint256,uint256,address,address[],uint256[],string)": FunctionFragment;
   };
 
   encodeFunctionData(
@@ -65,7 +65,7 @@ interface BoxShopInterface extends ethers.utils.Interface {
       BigNumberish,
       BigNumberish,
       string,
-      BigNumberish[],
+      string[],
       BigNumberish[],
       string
     ]
@@ -129,7 +129,7 @@ interface BoxShopInterface extends ethers.utils.Interface {
       BigNumberish,
       BigNumberish,
       string,
-      BigNumberish[],
+      string[],
       BigNumberish[],
       string
     ]
@@ -264,7 +264,7 @@ export class BoxShop extends BaseContract {
       sellLimit: BigNumberish,
       price: BigNumberish,
       currency: string,
-      boxTypes: BigNumberish[],
+      box: string[],
       boxAmounts: BigNumberish[],
       _name: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -311,7 +311,7 @@ export class BoxShop extends BaseContract {
           BigNumber,
           BigNumber,
           string,
-          BigNumber[],
+          string[],
           BigNumber[],
           string
         ] & {
@@ -323,7 +323,7 @@ export class BoxShop extends BaseContract {
           sold: BigNumber;
           price: BigNumber;
           currency: string;
-          boxTypes: BigNumber[];
+          box: string[];
           boxAmounts: BigNumber[];
           name: string;
         })[]
@@ -337,7 +337,7 @@ export class BoxShop extends BaseContract {
           BigNumber,
           BigNumber,
           string,
-          BigNumber[],
+          string[],
           BigNumber[],
           string
         ] & {
@@ -349,7 +349,7 @@ export class BoxShop extends BaseContract {
           sold: BigNumber;
           price: BigNumber;
           currency: string;
-          boxTypes: BigNumber[];
+          box: string[];
           boxAmounts: BigNumber[];
           name: string;
         })[];
@@ -406,7 +406,7 @@ export class BoxShop extends BaseContract {
       sellLimit: BigNumberish,
       price: BigNumberish,
       currency: string,
-      boxTypes: BigNumberish[],
+      box: string[],
       boxAmounts: BigNumberish[],
       _name: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -427,7 +427,7 @@ export class BoxShop extends BaseContract {
     sellLimit: BigNumberish,
     price: BigNumberish,
     currency: string,
-    boxTypes: BigNumberish[],
+    box: string[],
     boxAmounts: BigNumberish[],
     _name: string,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -473,7 +473,7 @@ export class BoxShop extends BaseContract {
       BigNumber,
       BigNumber,
       string,
-      BigNumber[],
+      string[],
       BigNumber[],
       string
     ] & {
@@ -485,7 +485,7 @@ export class BoxShop extends BaseContract {
       sold: BigNumber;
       price: BigNumber;
       currency: string;
-      boxTypes: BigNumber[];
+      box: string[];
       boxAmounts: BigNumber[];
       name: string;
     })[]
@@ -541,7 +541,7 @@ export class BoxShop extends BaseContract {
     sellLimit: BigNumberish,
     price: BigNumberish,
     currency: string,
-    boxTypes: BigNumberish[],
+    box: string[],
     boxAmounts: BigNumberish[],
     _name: string,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -562,7 +562,7 @@ export class BoxShop extends BaseContract {
       sellLimit: BigNumberish,
       price: BigNumberish,
       currency: string,
-      boxTypes: BigNumberish[],
+      box: string[],
       boxAmounts: BigNumberish[],
       _name: string,
       overrides?: CallOverrides
@@ -608,7 +608,7 @@ export class BoxShop extends BaseContract {
         BigNumber,
         BigNumber,
         string,
-        BigNumber[],
+        string[],
         BigNumber[],
         string
       ] & {
@@ -620,7 +620,7 @@ export class BoxShop extends BaseContract {
         sold: BigNumber;
         price: BigNumber;
         currency: string;
-        boxTypes: BigNumber[];
+        box: string[];
         boxAmounts: BigNumber[];
         name: string;
       })[]
@@ -673,7 +673,7 @@ export class BoxShop extends BaseContract {
       sellLimit: BigNumberish,
       price: BigNumberish,
       currency: string,
-      boxTypes: BigNumberish[],
+      box: string[],
       boxAmounts: BigNumberish[],
       _name: string,
       overrides?: CallOverrides
@@ -694,7 +694,7 @@ export class BoxShop extends BaseContract {
           BigNumber,
           BigNumber,
           string,
-          BigNumber[],
+          string[],
           BigNumber[],
           string
         ] & {
@@ -706,7 +706,7 @@ export class BoxShop extends BaseContract {
           sold: BigNumber;
           price: BigNumber;
           currency: string;
-          boxTypes: BigNumber[];
+          box: string[];
           boxAmounts: BigNumber[];
           name: string;
         }
@@ -721,7 +721,7 @@ export class BoxShop extends BaseContract {
           BigNumber,
           BigNumber,
           string,
-          BigNumber[],
+          string[],
           BigNumber[],
           string
         ] & {
@@ -733,7 +733,7 @@ export class BoxShop extends BaseContract {
           sold: BigNumber;
           price: BigNumber;
           currency: string;
-          boxTypes: BigNumber[];
+          box: string[];
           boxAmounts: BigNumber[];
           name: string;
         };
@@ -768,7 +768,7 @@ export class BoxShop extends BaseContract {
           BigNumber,
           BigNumber,
           string,
-          BigNumber[],
+          string[],
           BigNumber[],
           string
         ] & {
@@ -780,7 +780,7 @@ export class BoxShop extends BaseContract {
           sold: BigNumber;
           price: BigNumber;
           currency: string;
-          boxTypes: BigNumber[];
+          box: string[];
           boxAmounts: BigNumber[];
           name: string;
         }
@@ -795,7 +795,7 @@ export class BoxShop extends BaseContract {
           BigNumber,
           BigNumber,
           string,
-          BigNumber[],
+          string[],
           BigNumber[],
           string
         ] & {
@@ -807,7 +807,7 @@ export class BoxShop extends BaseContract {
           sold: BigNumber;
           price: BigNumber;
           currency: string;
-          boxTypes: BigNumber[];
+          box: string[];
           boxAmounts: BigNumber[];
           name: string;
         };
@@ -857,7 +857,7 @@ export class BoxShop extends BaseContract {
       sellLimit: BigNumberish,
       price: BigNumberish,
       currency: string,
-      boxTypes: BigNumberish[],
+      box: string[],
       boxAmounts: BigNumberish[],
       _name: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -948,7 +948,7 @@ export class BoxShop extends BaseContract {
       sellLimit: BigNumberish,
       price: BigNumberish,
       currency: string,
-      boxTypes: BigNumberish[],
+      box: string[],
       boxAmounts: BigNumberish[],
       _name: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -972,7 +972,7 @@ export class BoxShop extends BaseContract {
       sellLimit: BigNumberish,
       price: BigNumberish,
       currency: string,
-      boxTypes: BigNumberish[],
+      box: string[],
       boxAmounts: BigNumberish[],
       _name: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -1063,7 +1063,7 @@ export class BoxShop extends BaseContract {
       sellLimit: BigNumberish,
       price: BigNumberish,
       currency: string,
-      boxTypes: BigNumberish[],
+      box: string[],
       boxAmounts: BigNumberish[],
       _name: string,
       overrides?: Overrides & { from?: string | Promise<string> }

@@ -19,71 +19,72 @@ import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
-interface ArenaBoxInterface extends ethers.utils.Interface {
+interface AONInterface extends ethers.utils.Interface {
   functions: {
+    "BP()": FunctionFragment;
     "DEFAULT_ADMIN_ROLE()": FunctionFragment;
-    "MINTER_ROLE()": FunctionFragment;
-    "NFTContract()": FunctionFragment;
-    "OWNER_ROLE()": FunctionFragment;
-    "SIGNER_ROLE()": FunctionFragment;
+    "DEPLOYER_ROLE()": FunctionFragment;
+    "allowance(address,address)": FunctionFragment;
     "approve(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
+    "balanceOfAt(address,uint256)": FunctionFragment;
     "burn(uint256)": FunctionFragment;
-    "claim(uint256,bytes,bytes)": FunctionFragment;
-    "getApproved(uint256)": FunctionFragment;
+    "burnFrom(address,uint256)": FunctionFragment;
+    "decimals()": FunctionFragment;
+    "decreaseAllowance(address,uint256)": FunctionFragment;
     "getRoleAdmin(bytes32)": FunctionFragment;
     "grantRole(bytes32,address)": FunctionFragment;
     "hasRole(bytes32,address)": FunctionFragment;
-    "isApprovedForAll(address,address)": FunctionFragment;
-    "mint(address)": FunctionFragment;
-    "mintMany(address,uint256)": FunctionFragment;
+    "increaseAllowance(address,uint256)": FunctionFragment;
+    "isInPreventBotMode()": FunctionFragment;
     "name()": FunctionFragment;
-    "ownerOf(uint256)": FunctionFragment;
+    "pause()": FunctionFragment;
+    "paused()": FunctionFragment;
     "renounceRole(bytes32,address)": FunctionFragment;
     "revokeRole(bytes32,address)": FunctionFragment;
-    "safeTransferFrom(address,address,uint256)": FunctionFragment;
-    "setApprovalForAll(address,bool)": FunctionFragment;
+    "setBPContract(address)": FunctionFragment;
+    "snapshot()": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
     "symbol()": FunctionFragment;
-    "tokenURI(uint256)": FunctionFragment;
+    "togglePreventBotMode()": FunctionFragment;
+    "totalSupply()": FunctionFragment;
+    "totalSupplyAt(uint256)": FunctionFragment;
+    "transfer(address,uint256)": FunctionFragment;
     "transferFrom(address,address,uint256)": FunctionFragment;
-    "updateBaseURI(string)": FunctionFragment;
-    "updateNFTContract(address)": FunctionFragment;
+    "unpause()": FunctionFragment;
   };
 
+  encodeFunctionData(functionFragment: "BP", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "DEFAULT_ADMIN_ROLE",
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "MINTER_ROLE",
+    functionFragment: "DEPLOYER_ROLE",
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "NFTContract",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "OWNER_ROLE",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "SIGNER_ROLE",
-    values?: undefined
+    functionFragment: "allowance",
+    values: [string, string]
   ): string;
   encodeFunctionData(
     functionFragment: "approve",
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "balanceOfAt",
+    values: [string, BigNumberish]
+  ): string;
   encodeFunctionData(functionFragment: "burn", values: [BigNumberish]): string;
   encodeFunctionData(
-    functionFragment: "claim",
-    values: [BigNumberish, BytesLike, BytesLike]
+    functionFragment: "burnFrom",
+    values: [string, BigNumberish]
   ): string;
+  encodeFunctionData(functionFragment: "decimals", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "getApproved",
-    values: [BigNumberish]
+    functionFragment: "decreaseAllowance",
+    values: [string, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "getRoleAdmin",
@@ -98,19 +99,16 @@ interface ArenaBoxInterface extends ethers.utils.Interface {
     values: [BytesLike, string]
   ): string;
   encodeFunctionData(
-    functionFragment: "isApprovedForAll",
-    values: [string, string]
-  ): string;
-  encodeFunctionData(functionFragment: "mint", values: [string]): string;
-  encodeFunctionData(
-    functionFragment: "mintMany",
+    functionFragment: "increaseAllowance",
     values: [string, BigNumberish]
   ): string;
-  encodeFunctionData(functionFragment: "name", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "ownerOf",
-    values: [BigNumberish]
+    functionFragment: "isInPreventBotMode",
+    values?: undefined
   ): string;
+  encodeFunctionData(functionFragment: "name", values?: undefined): string;
+  encodeFunctionData(functionFragment: "pause", values?: undefined): string;
+  encodeFunctionData(functionFragment: "paused", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "renounceRole",
     values: [BytesLike, string]
@@ -120,58 +118,58 @@ interface ArenaBoxInterface extends ethers.utils.Interface {
     values: [BytesLike, string]
   ): string;
   encodeFunctionData(
-    functionFragment: "safeTransferFrom",
-    values: [string, string, BigNumberish]
+    functionFragment: "setBPContract",
+    values: [string]
   ): string;
-  encodeFunctionData(
-    functionFragment: "setApprovalForAll",
-    values: [string, boolean]
-  ): string;
+  encodeFunctionData(functionFragment: "snapshot", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "supportsInterface",
     values: [BytesLike]
   ): string;
   encodeFunctionData(functionFragment: "symbol", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "tokenURI",
+    functionFragment: "togglePreventBotMode",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "totalSupply",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "totalSupplyAt",
     values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "transfer",
+    values: [string, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "transferFrom",
     values: [string, string, BigNumberish]
   ): string;
-  encodeFunctionData(
-    functionFragment: "updateBaseURI",
-    values: [string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "updateNFTContract",
-    values: [string]
-  ): string;
+  encodeFunctionData(functionFragment: "unpause", values?: undefined): string;
 
+  decodeFunctionResult(functionFragment: "BP", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "DEFAULT_ADMIN_ROLE",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "MINTER_ROLE",
+    functionFragment: "DEPLOYER_ROLE",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: "NFTContract",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(functionFragment: "OWNER_ROLE", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "SIGNER_ROLE",
-    data: BytesLike
-  ): Result;
+  decodeFunctionResult(functionFragment: "allowance", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "burn", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "claim", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "getApproved",
+    functionFragment: "balanceOfAt",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "burn", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "burnFrom", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "decimals", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "decreaseAllowance",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -181,65 +179,72 @@ interface ArenaBoxInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "grantRole", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "hasRole", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "isApprovedForAll",
+    functionFragment: "increaseAllowance",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "mint", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "mintMany", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "isInPreventBotMode",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "ownerOf", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "pause", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "paused", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "renounceRole",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "revokeRole", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "safeTransferFrom",
+    functionFragment: "setBPContract",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: "setApprovalForAll",
-    data: BytesLike
-  ): Result;
+  decodeFunctionResult(functionFragment: "snapshot", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "supportsInterface",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "symbol", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "tokenURI", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "togglePreventBotMode",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "totalSupply",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "totalSupplyAt",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "transfer", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "transferFrom",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: "updateBaseURI",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "updateNFTContract",
-    data: BytesLike
-  ): Result;
+  decodeFunctionResult(functionFragment: "unpause", data: BytesLike): Result;
 
   events: {
     "Approval(address,address,uint256)": EventFragment;
-    "ApprovalForAll(address,address,bool)": EventFragment;
-    "LogClaim(uint256,address,address,uint256)": EventFragment;
+    "Paused(address)": EventFragment;
     "RoleAdminChanged(bytes32,bytes32,bytes32)": EventFragment;
     "RoleGranted(bytes32,address,address)": EventFragment;
     "RoleRevoked(bytes32,address,address)": EventFragment;
+    "Snapshot(uint256)": EventFragment;
     "Transfer(address,address,uint256)": EventFragment;
+    "Unpaused(address)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "Approval"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "ApprovalForAll"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "LogClaim"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Paused"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleAdminChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleGranted"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleRevoked"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Snapshot"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Unpaused"): EventFragment;
 }
 
-export class ArenaBox extends BaseContract {
+export class AON extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -280,43 +285,53 @@ export class ArenaBox extends BaseContract {
     toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
-  interface: ArenaBoxInterface;
+  interface: AONInterface;
 
   functions: {
+    BP(overrides?: CallOverrides): Promise<[string]>;
+
     DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<[string]>;
 
-    MINTER_ROLE(overrides?: CallOverrides): Promise<[string]>;
+    DEPLOYER_ROLE(overrides?: CallOverrides): Promise<[string]>;
 
-    NFTContract(overrides?: CallOverrides): Promise<[string]>;
-
-    OWNER_ROLE(overrides?: CallOverrides): Promise<[string]>;
-
-    SIGNER_ROLE(overrides?: CallOverrides): Promise<[string]>;
+    allowance(
+      owner: string,
+      spender: string,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
 
     approve(
-      to: string,
-      tokenId: BigNumberish,
+      spender: string,
+      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    balanceOf(owner: string, overrides?: CallOverrides): Promise<[BigNumber]>;
+    balanceOf(account: string, overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    balanceOfAt(
+      account: string,
+      snapshotId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
 
     burn(
-      boxId: BigNumberish,
+      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    claim(
-      boxId: BigNumberish,
-      data: BytesLike,
-      signature: BytesLike,
+    burnFrom(
+      account: string,
+      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    getApproved(
-      tokenId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[string]>;
+    decimals(overrides?: CallOverrides): Promise<[number]>;
+
+    decreaseAllowance(
+      spender: string,
+      subtractedValue: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<[string]>;
 
@@ -332,29 +347,21 @@ export class ArenaBox extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
-    isApprovedForAll(
-      owner: string,
-      operator: string,
-      overrides?: CallOverrides
-    ): Promise<[boolean]>;
-
-    mint(
-      user: string,
+    increaseAllowance(
+      spender: string,
+      addedValue: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    mintMany(
-      user: string,
-      quantity: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+    isInPreventBotMode(overrides?: CallOverrides): Promise<[boolean]>;
 
     name(overrides?: CallOverrides): Promise<[string]>;
 
-    ownerOf(
-      tokenId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[string]>;
+    pause(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    paused(overrides?: CallOverrides): Promise<[boolean]>;
 
     renounceRole(
       role: BytesLike,
@@ -368,24 +375,12 @@ export class ArenaBox extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    "safeTransferFrom(address,address,uint256)"(
-      from: string,
-      to: string,
-      tokenId: BigNumberish,
+    setBPContract(
+      _bp: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    "safeTransferFrom(address,address,uint256,bytes)"(
-      from: string,
-      to: string,
-      tokenId: BigNumberish,
-      _data: BytesLike,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    setApprovalForAll(
-      operator: string,
-      approved: boolean,
+    snapshot(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -396,63 +391,79 @@ export class ArenaBox extends BaseContract {
 
     symbol(overrides?: CallOverrides): Promise<[string]>;
 
-    tokenURI(
-      tokenId: BigNumberish,
+    togglePreventBotMode(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    totalSupply(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    totalSupplyAt(
+      snapshotId: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<[string]>;
+    ): Promise<[BigNumber]>;
+
+    transfer(
+      recipient: string,
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     transferFrom(
-      from: string,
-      to: string,
-      tokenId: BigNumberish,
+      sender: string,
+      recipient: string,
+      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    updateBaseURI(
-      _uri: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    updateNFTContract(
-      _nft: string,
+    unpause(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
   };
 
+  BP(overrides?: CallOverrides): Promise<string>;
+
   DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
 
-  MINTER_ROLE(overrides?: CallOverrides): Promise<string>;
+  DEPLOYER_ROLE(overrides?: CallOverrides): Promise<string>;
 
-  NFTContract(overrides?: CallOverrides): Promise<string>;
-
-  OWNER_ROLE(overrides?: CallOverrides): Promise<string>;
-
-  SIGNER_ROLE(overrides?: CallOverrides): Promise<string>;
+  allowance(
+    owner: string,
+    spender: string,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
 
   approve(
-    to: string,
-    tokenId: BigNumberish,
+    spender: string,
+    amount: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  balanceOf(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
+  balanceOf(account: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+  balanceOfAt(
+    account: string,
+    snapshotId: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
 
   burn(
-    boxId: BigNumberish,
+    amount: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  claim(
-    boxId: BigNumberish,
-    data: BytesLike,
-    signature: BytesLike,
+  burnFrom(
+    account: string,
+    amount: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  getApproved(
-    tokenId: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<string>;
+  decimals(overrides?: CallOverrides): Promise<number>;
+
+  decreaseAllowance(
+    spender: string,
+    subtractedValue: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<string>;
 
@@ -468,26 +479,21 @@ export class ArenaBox extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
-  isApprovedForAll(
-    owner: string,
-    operator: string,
-    overrides?: CallOverrides
-  ): Promise<boolean>;
-
-  mint(
-    user: string,
+  increaseAllowance(
+    spender: string,
+    addedValue: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  mintMany(
-    user: string,
-    quantity: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
+  isInPreventBotMode(overrides?: CallOverrides): Promise<boolean>;
 
   name(overrides?: CallOverrides): Promise<string>;
 
-  ownerOf(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
+  pause(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  paused(overrides?: CallOverrides): Promise<boolean>;
 
   renounceRole(
     role: BytesLike,
@@ -501,24 +507,12 @@ export class ArenaBox extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  "safeTransferFrom(address,address,uint256)"(
-    from: string,
-    to: string,
-    tokenId: BigNumberish,
+  setBPContract(
+    _bp: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  "safeTransferFrom(address,address,uint256,bytes)"(
-    from: string,
-    to: string,
-    tokenId: BigNumberish,
-    _data: BytesLike,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  setApprovalForAll(
-    operator: string,
-    approved: boolean,
+  snapshot(
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -529,57 +523,76 @@ export class ArenaBox extends BaseContract {
 
   symbol(overrides?: CallOverrides): Promise<string>;
 
-  tokenURI(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
+  togglePreventBotMode(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
+
+  totalSupplyAt(
+    snapshotId: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  transfer(
+    recipient: string,
+    amount: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   transferFrom(
-    from: string,
-    to: string,
-    tokenId: BigNumberish,
+    sender: string,
+    recipient: string,
+    amount: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  updateBaseURI(
-    _uri: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  updateNFTContract(
-    _nft: string,
+  unpause(
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   callStatic: {
+    BP(overrides?: CallOverrides): Promise<string>;
+
     DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
 
-    MINTER_ROLE(overrides?: CallOverrides): Promise<string>;
+    DEPLOYER_ROLE(overrides?: CallOverrides): Promise<string>;
 
-    NFTContract(overrides?: CallOverrides): Promise<string>;
-
-    OWNER_ROLE(overrides?: CallOverrides): Promise<string>;
-
-    SIGNER_ROLE(overrides?: CallOverrides): Promise<string>;
-
-    approve(
-      to: string,
-      tokenId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    balanceOf(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
-
-    burn(boxId: BigNumberish, overrides?: CallOverrides): Promise<void>;
-
-    claim(
-      boxId: BigNumberish,
-      data: BytesLike,
-      signature: BytesLike,
+    allowance(
+      owner: string,
+      spender: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    getApproved(
-      tokenId: BigNumberish,
+    approve(
+      spender: string,
+      amount: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<string>;
+    ): Promise<boolean>;
+
+    balanceOf(account: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    balanceOfAt(
+      account: string,
+      snapshotId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    burn(amount: BigNumberish, overrides?: CallOverrides): Promise<void>;
+
+    burnFrom(
+      account: string,
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    decimals(overrides?: CallOverrides): Promise<number>;
+
+    decreaseAllowance(
+      spender: string,
+      subtractedValue: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
 
     getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<string>;
 
@@ -595,23 +608,19 @@ export class ArenaBox extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    isApprovedForAll(
-      owner: string,
-      operator: string,
+    increaseAllowance(
+      spender: string,
+      addedValue: BigNumberish,
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    mint(user: string, overrides?: CallOverrides): Promise<BigNumber>;
-
-    mintMany(
-      user: string,
-      quantity: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
+    isInPreventBotMode(overrides?: CallOverrides): Promise<boolean>;
 
     name(overrides?: CallOverrides): Promise<string>;
 
-    ownerOf(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
+    pause(overrides?: CallOverrides): Promise<void>;
+
+    paused(overrides?: CallOverrides): Promise<boolean>;
 
     renounceRole(
       role: BytesLike,
@@ -625,26 +634,9 @@ export class ArenaBox extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "safeTransferFrom(address,address,uint256)"(
-      from: string,
-      to: string,
-      tokenId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
+    setBPContract(_bp: string, overrides?: CallOverrides): Promise<void>;
 
-    "safeTransferFrom(address,address,uint256,bytes)"(
-      from: string,
-      to: string,
-      tokenId: BigNumberish,
-      _data: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    setApprovalForAll(
-      operator: string,
-      approved: boolean,
-      overrides?: CallOverrides
-    ): Promise<void>;
+    snapshot(overrides?: CallOverrides): Promise<BigNumber>;
 
     supportsInterface(
       interfaceId: BytesLike,
@@ -653,48 +645,42 @@ export class ArenaBox extends BaseContract {
 
     symbol(overrides?: CallOverrides): Promise<string>;
 
-    tokenURI(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
+    togglePreventBotMode(overrides?: CallOverrides): Promise<void>;
+
+    totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
+
+    totalSupplyAt(
+      snapshotId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    transfer(
+      recipient: string,
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
 
     transferFrom(
-      from: string,
-      to: string,
-      tokenId: BigNumberish,
+      sender: string,
+      recipient: string,
+      amount: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<void>;
+    ): Promise<boolean>;
 
-    updateBaseURI(_uri: string, overrides?: CallOverrides): Promise<void>;
-
-    updateNFTContract(_nft: string, overrides?: CallOverrides): Promise<void>;
+    unpause(overrides?: CallOverrides): Promise<void>;
   };
 
   filters: {
     Approval(
       owner?: string | null,
-      approved?: string | null,
-      tokenId?: BigNumberish | null
+      spender?: string | null,
+      value?: null
     ): TypedEventFilter<
       [string, string, BigNumber],
-      { owner: string; approved: string; tokenId: BigNumber }
+      { owner: string; spender: string; value: BigNumber }
     >;
 
-    ApprovalForAll(
-      owner?: string | null,
-      operator?: string | null,
-      approved?: null
-    ): TypedEventFilter<
-      [string, string, boolean],
-      { owner: string; operator: string; approved: boolean }
-    >;
-
-    LogClaim(
-      boxId?: null,
-      user?: null,
-      nftContract?: null,
-      nftId?: null
-    ): TypedEventFilter<
-      [BigNumber, string, string, BigNumber],
-      { boxId: BigNumber; user: string; nftContract: string; nftId: BigNumber }
-    >;
+    Paused(account?: null): TypedEventFilter<[string], { account: string }>;
 
     RoleAdminChanged(
       role?: BytesLike | null,
@@ -723,50 +709,64 @@ export class ArenaBox extends BaseContract {
       { role: string; account: string; sender: string }
     >;
 
+    Snapshot(id?: null): TypedEventFilter<[BigNumber], { id: BigNumber }>;
+
     Transfer(
       from?: string | null,
       to?: string | null,
-      tokenId?: BigNumberish | null
+      value?: null
     ): TypedEventFilter<
       [string, string, BigNumber],
-      { from: string; to: string; tokenId: BigNumber }
+      { from: string; to: string; value: BigNumber }
     >;
+
+    Unpaused(account?: null): TypedEventFilter<[string], { account: string }>;
   };
 
   estimateGas: {
+    BP(overrides?: CallOverrides): Promise<BigNumber>;
+
     DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
 
-    MINTER_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
+    DEPLOYER_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
 
-    NFTContract(overrides?: CallOverrides): Promise<BigNumber>;
-
-    OWNER_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
-
-    SIGNER_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
+    allowance(
+      owner: string,
+      spender: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     approve(
-      to: string,
-      tokenId: BigNumberish,
+      spender: string,
+      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    balanceOf(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
+    balanceOf(account: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    balanceOfAt(
+      account: string,
+      snapshotId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     burn(
-      boxId: BigNumberish,
+      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    claim(
-      boxId: BigNumberish,
-      data: BytesLike,
-      signature: BytesLike,
+    burnFrom(
+      account: string,
+      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    getApproved(
-      tokenId: BigNumberish,
-      overrides?: CallOverrides
+    decimals(overrides?: CallOverrides): Promise<BigNumber>;
+
+    decreaseAllowance(
+      spender: string,
+      subtractedValue: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     getRoleAdmin(
@@ -786,29 +786,21 @@ export class ArenaBox extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    isApprovedForAll(
-      owner: string,
-      operator: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    mint(
-      user: string,
+    increaseAllowance(
+      spender: string,
+      addedValue: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    mintMany(
-      user: string,
-      quantity: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
+    isInPreventBotMode(overrides?: CallOverrides): Promise<BigNumber>;
 
     name(overrides?: CallOverrides): Promise<BigNumber>;
 
-    ownerOf(
-      tokenId: BigNumberish,
-      overrides?: CallOverrides
+    pause(
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
+
+    paused(overrides?: CallOverrides): Promise<BigNumber>;
 
     renounceRole(
       role: BytesLike,
@@ -822,24 +814,12 @@ export class ArenaBox extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    "safeTransferFrom(address,address,uint256)"(
-      from: string,
-      to: string,
-      tokenId: BigNumberish,
+    setBPContract(
+      _bp: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    "safeTransferFrom(address,address,uint256,bytes)"(
-      from: string,
-      to: string,
-      tokenId: BigNumberish,
-      _data: BytesLike,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    setApprovalForAll(
-      operator: string,
-      approved: boolean,
+    snapshot(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -850,68 +830,84 @@ export class ArenaBox extends BaseContract {
 
     symbol(overrides?: CallOverrides): Promise<BigNumber>;
 
-    tokenURI(
-      tokenId: BigNumberish,
+    togglePreventBotMode(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
+
+    totalSupplyAt(
+      snapshotId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    transfer(
+      recipient: string,
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     transferFrom(
-      from: string,
-      to: string,
-      tokenId: BigNumberish,
+      sender: string,
+      recipient: string,
+      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    updateBaseURI(
-      _uri: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    updateNFTContract(
-      _nft: string,
+    unpause(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
   };
 
   populateTransaction: {
+    BP(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     DEFAULT_ADMIN_ROLE(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    MINTER_ROLE(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    DEPLOYER_ROLE(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    NFTContract(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    OWNER_ROLE(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    SIGNER_ROLE(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    allowance(
+      owner: string,
+      spender: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     approve(
-      to: string,
-      tokenId: BigNumberish,
+      spender: string,
+      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     balanceOf(
-      owner: string,
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    balanceOfAt(
+      account: string,
+      snapshotId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     burn(
-      boxId: BigNumberish,
+      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    claim(
-      boxId: BigNumberish,
-      data: BytesLike,
-      signature: BytesLike,
+    burnFrom(
+      account: string,
+      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    getApproved(
-      tokenId: BigNumberish,
-      overrides?: CallOverrides
+    decimals(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    decreaseAllowance(
+      spender: string,
+      subtractedValue: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     getRoleAdmin(
@@ -931,29 +927,23 @@ export class ArenaBox extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    isApprovedForAll(
-      owner: string,
-      operator: string,
+    increaseAllowance(
+      spender: string,
+      addedValue: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    isInPreventBotMode(
       overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    mint(
-      user: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    mintMany(
-      user: string,
-      quantity: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     name(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    ownerOf(
-      tokenId: BigNumberish,
-      overrides?: CallOverrides
+    pause(
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
+
+    paused(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     renounceRole(
       role: BytesLike,
@@ -967,24 +957,12 @@ export class ArenaBox extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    "safeTransferFrom(address,address,uint256)"(
-      from: string,
-      to: string,
-      tokenId: BigNumberish,
+    setBPContract(
+      _bp: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    "safeTransferFrom(address,address,uint256,bytes)"(
-      from: string,
-      to: string,
-      tokenId: BigNumberish,
-      _data: BytesLike,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setApprovalForAll(
-      operator: string,
-      approved: boolean,
+    snapshot(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -995,25 +973,31 @@ export class ArenaBox extends BaseContract {
 
     symbol(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    tokenURI(
-      tokenId: BigNumberish,
+    togglePreventBotMode(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    totalSupply(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    totalSupplyAt(
+      snapshotId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    transfer(
+      recipient: string,
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     transferFrom(
-      from: string,
-      to: string,
-      tokenId: BigNumberish,
+      sender: string,
+      recipient: string,
+      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    updateBaseURI(
-      _uri: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    updateNFTContract(
-      _nft: string,
+    unpause(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };

@@ -11,7 +11,6 @@ import {
   PopulatedTransaction,
   BaseContract,
   ContractTransaction,
-  Overrides,
   CallOverrides,
 } from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
@@ -19,22 +18,25 @@ import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
-interface IArenaBoxInterface extends ethers.utils.Interface {
+interface PausableInterface extends ethers.utils.Interface {
   functions: {
-    "mintMany(address,uint256)": FunctionFragment;
+    "paused()": FunctionFragment;
   };
 
-  encodeFunctionData(
-    functionFragment: "mintMany",
-    values: [string, BigNumberish]
-  ): string;
+  encodeFunctionData(functionFragment: "paused", values?: undefined): string;
 
-  decodeFunctionResult(functionFragment: "mintMany", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "paused", data: BytesLike): Result;
 
-  events: {};
+  events: {
+    "Paused(address)": EventFragment;
+    "Unpaused(address)": EventFragment;
+  };
+
+  getEvent(nameOrSignatureOrTopic: "Paused"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Unpaused"): EventFragment;
 }
 
-export class IArenaBox extends BaseContract {
+export class Pausable extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -75,45 +77,29 @@ export class IArenaBox extends BaseContract {
     toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
-  interface: IArenaBoxInterface;
+  interface: PausableInterface;
 
   functions: {
-    mintMany(
-      user: string,
-      quantity: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+    paused(overrides?: CallOverrides): Promise<[boolean]>;
   };
 
-  mintMany(
-    user: string,
-    quantity: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
+  paused(overrides?: CallOverrides): Promise<boolean>;
 
   callStatic: {
-    mintMany(
-      user: string,
-      quantity: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
+    paused(overrides?: CallOverrides): Promise<boolean>;
   };
 
-  filters: {};
+  filters: {
+    Paused(account?: null): TypedEventFilter<[string], { account: string }>;
+
+    Unpaused(account?: null): TypedEventFilter<[string], { account: string }>;
+  };
 
   estimateGas: {
-    mintMany(
-      user: string,
-      quantity: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
+    paused(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
-    mintMany(
-      user: string,
-      quantity: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
+    paused(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }

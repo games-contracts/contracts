@@ -23,14 +23,15 @@ interface AONStakingPoolRewardNFTInterface extends ethers.utils.Interface {
   functions: {
     "DEFAULT_ADMIN_ROLE()": FunctionFragment;
     "OWNER_ROLE()": FunctionFragment;
-    "_unStakedTime(address,uint256)": FunctionFragment;
-    "_userStaked(address,uint256)": FunctionFragment;
+    "_staked(uint256)": FunctionFragment;
     "addPackage(uint256,uint256,address)": FunctionFragment;
     "emergencyWithdrawERC20(address,uint256,address)": FunctionFragment;
     "emergencyWithdrawERC721(address,address,uint256)": FunctionFragment;
     "emergencyWithdrawNative(uint256,address)": FunctionFragment;
     "getPackages(uint256,uint256)": FunctionFragment;
+    "getRewardIds(uint256)": FunctionFragment;
     "getRoleAdmin(bytes32)": FunctionFragment;
+    "getStakedIds(address)": FunctionFragment;
     "grantRole(bytes32,address)": FunctionFragment;
     "hasRole(bytes32,address)": FunctionFragment;
     "initRewardIds(uint256,uint256[])": FunctionFragment;
@@ -54,12 +55,8 @@ interface AONStakingPoolRewardNFTInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "_unStakedTime",
-    values: [string, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "_userStaked",
-    values: [string, BigNumberish]
+    functionFragment: "_staked",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "addPackage",
@@ -82,8 +79,16 @@ interface AONStakingPoolRewardNFTInterface extends ethers.utils.Interface {
     values: [BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "getRewardIds",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "getRoleAdmin",
     values: [BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getStakedIds",
+    values: [string]
   ): string;
   encodeFunctionData(
     functionFragment: "grantRole",
@@ -133,14 +138,7 @@ interface AONStakingPoolRewardNFTInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "OWNER_ROLE", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "_unStakedTime",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "_userStaked",
-    data: BytesLike
-  ): Result;
+  decodeFunctionResult(functionFragment: "_staked", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "addPackage", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "emergencyWithdrawERC20",
@@ -159,7 +157,15 @@ interface AONStakingPoolRewardNFTInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "getRewardIds",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "getRoleAdmin",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getStakedIds",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "grantRole", data: BytesLike): Result;
@@ -259,17 +265,17 @@ export class AONStakingPoolRewardNFT extends BaseContract {
 
     OWNER_ROLE(overrides?: CallOverrides): Promise<[string]>;
 
-    _unStakedTime(
-      arg0: string,
-      arg1: BigNumberish,
+    _staked(
+      arg0: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
-    _userStaked(
-      arg0: string,
-      arg1: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[boolean]>;
+    ): Promise<
+      [boolean, BigNumber, BigNumber, string] & {
+        withdraw: boolean;
+        withdrawTime: BigNumber;
+        packageId: BigNumber;
+        user: string;
+      }
+    >;
 
     addPackage(
       amountStake: BigNumberish,
@@ -311,8 +317,7 @@ export class AONStakingPoolRewardNFT extends BaseContract {
           BigNumber,
           BigNumber,
           BigNumber,
-          string,
-          BigNumber[]
+          string
         ] & {
           isActive: boolean;
           packageId: BigNumber;
@@ -321,7 +326,6 @@ export class AONStakingPoolRewardNFT extends BaseContract {
           totalStaked: BigNumber;
           limitStaked: BigNumber;
           rewardNFT: string;
-          rewardTokenIds: BigNumber[];
         })[]
       ] & {
         packages: ([
@@ -331,8 +335,7 @@ export class AONStakingPoolRewardNFT extends BaseContract {
           BigNumber,
           BigNumber,
           BigNumber,
-          string,
-          BigNumber[]
+          string
         ] & {
           isActive: boolean;
           packageId: BigNumber;
@@ -341,12 +344,21 @@ export class AONStakingPoolRewardNFT extends BaseContract {
           totalStaked: BigNumber;
           limitStaked: BigNumber;
           rewardNFT: string;
-          rewardTokenIds: BigNumber[];
         })[];
       }
     >;
 
+    getRewardIds(
+      packageId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber[]] & { tokenIds: BigNumber[] }>;
+
     getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<[string]>;
+
+    getStakedIds(
+      user: string,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber[]] & { stakedIds: BigNumber[] }>;
 
     grantRole(
       role: BytesLike,
@@ -405,7 +417,7 @@ export class AONStakingPoolRewardNFT extends BaseContract {
     ): Promise<ContractTransaction>;
 
     withdraw(
-      packageId: BigNumberish,
+      stakedId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
   };
@@ -414,17 +426,17 @@ export class AONStakingPoolRewardNFT extends BaseContract {
 
   OWNER_ROLE(overrides?: CallOverrides): Promise<string>;
 
-  _unStakedTime(
-    arg0: string,
-    arg1: BigNumberish,
+  _staked(
+    arg0: BigNumberish,
     overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  _userStaked(
-    arg0: string,
-    arg1: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<boolean>;
+  ): Promise<
+    [boolean, BigNumber, BigNumber, string] & {
+      withdraw: boolean;
+      withdrawTime: BigNumber;
+      packageId: BigNumber;
+      user: string;
+    }
+  >;
 
   addPackage(
     amountStake: BigNumberish,
@@ -465,8 +477,7 @@ export class AONStakingPoolRewardNFT extends BaseContract {
       BigNumber,
       BigNumber,
       BigNumber,
-      string,
-      BigNumber[]
+      string
     ] & {
       isActive: boolean;
       packageId: BigNumber;
@@ -475,11 +486,17 @@ export class AONStakingPoolRewardNFT extends BaseContract {
       totalStaked: BigNumber;
       limitStaked: BigNumber;
       rewardNFT: string;
-      rewardTokenIds: BigNumber[];
     })[]
   >;
 
+  getRewardIds(
+    packageId: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<BigNumber[]>;
+
   getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<string>;
+
+  getStakedIds(user: string, overrides?: CallOverrides): Promise<BigNumber[]>;
 
   grantRole(
     role: BytesLike,
@@ -538,7 +555,7 @@ export class AONStakingPoolRewardNFT extends BaseContract {
   ): Promise<ContractTransaction>;
 
   withdraw(
-    packageId: BigNumberish,
+    stakedId: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -547,17 +564,17 @@ export class AONStakingPoolRewardNFT extends BaseContract {
 
     OWNER_ROLE(overrides?: CallOverrides): Promise<string>;
 
-    _unStakedTime(
-      arg0: string,
-      arg1: BigNumberish,
+    _staked(
+      arg0: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    _userStaked(
-      arg0: string,
-      arg1: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
+    ): Promise<
+      [boolean, BigNumber, BigNumber, string] & {
+        withdraw: boolean;
+        withdrawTime: BigNumber;
+        packageId: BigNumber;
+        user: string;
+      }
+    >;
 
     addPackage(
       amountStake: BigNumberish,
@@ -598,8 +615,7 @@ export class AONStakingPoolRewardNFT extends BaseContract {
         BigNumber,
         BigNumber,
         BigNumber,
-        string,
-        BigNumber[]
+        string
       ] & {
         isActive: boolean;
         packageId: BigNumber;
@@ -608,11 +624,17 @@ export class AONStakingPoolRewardNFT extends BaseContract {
         totalStaked: BigNumber;
         limitStaked: BigNumber;
         rewardNFT: string;
-        rewardTokenIds: BigNumber[];
       })[]
     >;
 
+    getRewardIds(
+      packageId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber[]>;
+
     getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<string>;
+
+    getStakedIds(user: string, overrides?: CallOverrides): Promise<BigNumber[]>;
 
     grantRole(
       role: BytesLike,
@@ -653,7 +675,10 @@ export class AONStakingPoolRewardNFT extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    stake(packageId: BigNumberish, overrides?: CallOverrides): Promise<void>;
+    stake(
+      packageId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     stakeToken(overrides?: CallOverrides): Promise<string>;
 
@@ -667,7 +692,7 @@ export class AONStakingPoolRewardNFT extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    withdraw(packageId: BigNumberish, overrides?: CallOverrides): Promise<void>;
+    withdraw(stakedId: BigNumberish, overrides?: CallOverrides): Promise<void>;
   };
 
   filters: {
@@ -682,8 +707,7 @@ export class AONStakingPoolRewardNFT extends BaseContract {
           BigNumber,
           BigNumber,
           BigNumber,
-          string,
-          BigNumber[]
+          string
         ] & {
           isActive: boolean;
           packageId: BigNumber;
@@ -692,7 +716,6 @@ export class AONStakingPoolRewardNFT extends BaseContract {
           totalStaked: BigNumber;
           limitStaked: BigNumber;
           rewardNFT: string;
-          rewardTokenIds: BigNumber[];
         }
       ],
       {
@@ -703,8 +726,7 @@ export class AONStakingPoolRewardNFT extends BaseContract {
           BigNumber,
           BigNumber,
           BigNumber,
-          string,
-          BigNumber[]
+          string
         ] & {
           isActive: boolean;
           packageId: BigNumber;
@@ -713,7 +735,6 @@ export class AONStakingPoolRewardNFT extends BaseContract {
           totalStaked: BigNumber;
           limitStaked: BigNumber;
           rewardNFT: string;
-          rewardTokenIds: BigNumber[];
         };
       }
     >;
@@ -749,8 +770,7 @@ export class AONStakingPoolRewardNFT extends BaseContract {
           BigNumber,
           BigNumber,
           BigNumber,
-          string,
-          BigNumber[]
+          string
         ] & {
           isActive: boolean;
           packageId: BigNumber;
@@ -759,7 +779,6 @@ export class AONStakingPoolRewardNFT extends BaseContract {
           totalStaked: BigNumber;
           limitStaked: BigNumber;
           rewardNFT: string;
-          rewardTokenIds: BigNumber[];
         },
         BigNumber
       ],
@@ -772,8 +791,7 @@ export class AONStakingPoolRewardNFT extends BaseContract {
           BigNumber,
           BigNumber,
           BigNumber,
-          string,
-          BigNumber[]
+          string
         ] & {
           isActive: boolean;
           packageId: BigNumber;
@@ -782,7 +800,6 @@ export class AONStakingPoolRewardNFT extends BaseContract {
           totalStaked: BigNumber;
           limitStaked: BigNumber;
           rewardNFT: string;
-          rewardTokenIds: BigNumber[];
         };
         time: BigNumber;
       }
@@ -830,17 +847,7 @@ export class AONStakingPoolRewardNFT extends BaseContract {
 
     OWNER_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
 
-    _unStakedTime(
-      arg0: string,
-      arg1: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    _userStaked(
-      arg0: string,
-      arg1: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    _staked(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
     addPackage(
       amountStake: BigNumberish,
@@ -875,10 +882,17 @@ export class AONStakingPoolRewardNFT extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    getRewardIds(
+      packageId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     getRoleAdmin(
       role: BytesLike,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    getStakedIds(user: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     grantRole(
       role: BytesLike,
@@ -937,7 +951,7 @@ export class AONStakingPoolRewardNFT extends BaseContract {
     ): Promise<BigNumber>;
 
     withdraw(
-      packageId: BigNumberish,
+      stakedId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
   };
@@ -949,15 +963,8 @@ export class AONStakingPoolRewardNFT extends BaseContract {
 
     OWNER_ROLE(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    _unStakedTime(
-      arg0: string,
-      arg1: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    _userStaked(
-      arg0: string,
-      arg1: BigNumberish,
+    _staked(
+      arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -994,8 +1001,18 @@ export class AONStakingPoolRewardNFT extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    getRewardIds(
+      packageId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     getRoleAdmin(
       role: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getStakedIds(
+      user: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -1056,7 +1073,7 @@ export class AONStakingPoolRewardNFT extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     withdraw(
-      packageId: BigNumberish,
+      stakedId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };

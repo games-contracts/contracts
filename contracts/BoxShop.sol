@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
 interface IArenaBox {
-    function mintMany(address user, uint quantity, uint _type) external;
+    function mintMany(address user, uint quantity) external;
 }
 
 contract BoxShop is AccessControl {
@@ -31,7 +31,7 @@ contract BoxShop is AccessControl {
         uint sold;
         uint price;
         address currency;
-        uint[] boxTypes;
+        address[] box;
         uint[] boxAmounts;
         string name;
     }
@@ -78,10 +78,10 @@ contract BoxShop is AccessControl {
             bool transferred = token.transferFrom(msg.sender, address(this), totalPrice);
             require(transferred, "Cannot transfer ERC20");
         }
-        uint length = package.boxTypes.length;
+        uint length = package.box.length;
         for (uint j; j < quantity; ++j) {
             for (uint i; i < length; ++i) {
-                IArenaBox(_box).mintMany(msg.sender, package.boxAmounts[i], package.boxTypes[i]);
+                IArenaBox(package.box[i]).mintMany(msg.sender, package.boxAmounts[i]);
             }
         }
         emit LogBuy(msg.sender, packageId, quantity, totalPrice);
@@ -94,12 +94,12 @@ contract BoxShop is AccessControl {
         uint sellLimit,
         uint price,
         address currency,
-        uint[] calldata boxTypes,
+        address[] calldata box,
         uint[] calldata boxAmounts,
         string calldata _name
     ) external onlyRole(OWNER_ROLE) returns (uint)
     {
-        require(boxTypes.length > 0 && boxTypes.length == boxAmounts.length, "miss match length");
+        require(box.length > 0 && box.length == boxAmounts.length, "miss match length");
         uint newTypeId = _packageIds.current();
         _packageIds.increment();
         Package memory package;
@@ -111,7 +111,7 @@ contract BoxShop is AccessControl {
         package.sellLimit = sellLimit;
         package.price = price;
         package.currency = currency;
-        package.boxTypes = boxTypes;
+        package.box = box;
         package.boxAmounts = boxAmounts;
         _packages[newTypeId] = package;
         emit LogAddPackage(package);
@@ -125,12 +125,12 @@ contract BoxShop is AccessControl {
         uint sellLimit,
         uint price,
         address currency,
-        uint[] calldata boxTypes,
+        address[] calldata box,
         uint[] calldata boxAmounts,
         string calldata _name
     ) external onlyRole(OWNER_ROLE)
     {
-        require(boxTypes.length > 0 && boxTypes.length == boxAmounts.length, "miss match length");
+        require(box.length > 0 && box.length == boxAmounts.length, "miss match length");
         Package storage package = _packages[packageId];
         package.name = _name;
         package.startTime = startTime;
@@ -138,7 +138,7 @@ contract BoxShop is AccessControl {
         package.sellLimit = sellLimit;
         package.price = price;
         package.currency = currency;
-        package.boxTypes = boxTypes;
+        package.box = box;
         package.boxAmounts = boxAmounts;
         emit LogUpdatePackage(package);
     }

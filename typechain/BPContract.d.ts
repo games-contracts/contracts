@@ -19,22 +19,22 @@ import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
-interface IArenaBoxInterface extends ethers.utils.Interface {
+interface BPContractInterface extends ethers.utils.Interface {
   functions: {
-    "mintMany(address,uint256)": FunctionFragment;
+    "protect(address,address,uint256)": FunctionFragment;
   };
 
   encodeFunctionData(
-    functionFragment: "mintMany",
-    values: [string, BigNumberish]
+    functionFragment: "protect",
+    values: [string, string, BigNumberish]
   ): string;
 
-  decodeFunctionResult(functionFragment: "mintMany", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "protect", data: BytesLike): Result;
 
   events: {};
 }
 
-export class IArenaBox extends BaseContract {
+export class BPContract extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -75,26 +75,29 @@ export class IArenaBox extends BaseContract {
     toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
-  interface: IArenaBoxInterface;
+  interface: BPContractInterface;
 
   functions: {
-    mintMany(
-      user: string,
-      quantity: BigNumberish,
+    protect(
+      sender: string,
+      receiver: string,
+      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
   };
 
-  mintMany(
-    user: string,
-    quantity: BigNumberish,
+  protect(
+    sender: string,
+    receiver: string,
+    amount: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   callStatic: {
-    mintMany(
-      user: string,
-      quantity: BigNumberish,
+    protect(
+      sender: string,
+      receiver: string,
+      amount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
   };
@@ -102,17 +105,19 @@ export class IArenaBox extends BaseContract {
   filters: {};
 
   estimateGas: {
-    mintMany(
-      user: string,
-      quantity: BigNumberish,
+    protect(
+      sender: string,
+      receiver: string,
+      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
   };
 
   populateTransaction: {
-    mintMany(
-      user: string,
-      quantity: BigNumberish,
+    protect(
+      sender: string,
+      receiver: string,
+      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };

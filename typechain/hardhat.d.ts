@@ -21,6 +21,30 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IAccessControl__factory>;
     getContractFactory(
+      name: "Pausable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.Pausable__factory>;
+    getContractFactory(
+      name: "ERC20",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ERC20__factory>;
+    getContractFactory(
+      name: "ERC20Burnable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ERC20Burnable__factory>;
+    getContractFactory(
+      name: "ERC20Pausable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ERC20Pausable__factory>;
+    getContractFactory(
+      name: "ERC20Snapshot",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ERC20Snapshot__factory>;
+    getContractFactory(
+      name: "IERC20Metadata",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC20Metadata__factory>;
+    getContractFactory(
       name: "IERC20",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC20__factory>;
@@ -93,6 +117,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC165__factory>;
     getContractFactory(
+      name: "AON",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.AON__factory>;
+    getContractFactory(
       name: "AONStakingPoolRewardNFT",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.AONStakingPoolRewardNFT__factory>;
@@ -120,6 +148,10 @@ declare module "hardhat/types/runtime" {
       name: "IArenaBox",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IArenaBox__factory>;
+    getContractFactory(
+      name: "BPContract",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.BPContract__factory>;
     getContractFactory(
       name: "IMarketServicePartnerV1",
       signerOrOptions?: ethers.Signer | FactoryOptions

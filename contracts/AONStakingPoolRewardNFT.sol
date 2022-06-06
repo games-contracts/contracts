@@ -19,7 +19,7 @@ contract AONStakingPoolRewardNFT is AccessControl, ReentrancyGuard {
     Counters.Counter private _packageIds;
     Counters.Counter private _stakedIds;
 
-    mapping(address => EnumerableSet.UintSet) private _userStakedIds;
+    mapping(address => EnumerableSet.UintSet) private _userStakingIds;
     mapping(uint => EnumerableSet.UintSet) private _rewardTokenIds;
 
 
@@ -112,7 +112,7 @@ contract AONStakingPoolRewardNFT is AccessControl, ReentrancyGuard {
         _staked[stakedId] = _stakedInfo;
 
 
-        EnumerableSet.UintSet storage set = _userStakedIds[msg.sender];
+        EnumerableSet.UintSet storage set = _userStakingIds[msg.sender];
         EnumerableSet.add(set, stakedId);
 
         bool transferred = stakeToken.transferFrom(msg.sender, address(this), _package.amountStake);
@@ -133,9 +133,11 @@ contract AONStakingPoolRewardNFT is AccessControl, ReentrancyGuard {
         require(transferred, "cannot transfer");
 
         EnumerableSet.UintSet storage _rewardIds = _rewardTokenIds[_stakedInfo.packageId];
+        EnumerableSet.UintSet storage _userStakingId = _userStakingIds[msg.sender];
 
         uint tokenId = EnumerableSet.at(_rewardIds, _rewardIds.length() - 1);
         EnumerableSet.remove(_rewardIds, tokenId);
+        EnumerableSet.remove(_userStakingId, tokenId);
 
         _package.rewardNFT.transferFrom(address(this), msg.sender, tokenId);
 
@@ -180,9 +182,9 @@ contract AONStakingPoolRewardNFT is AccessControl, ReentrancyGuard {
     }
 
     function getStakedIds(address user) public view returns (uint[] memory stakedIds) {
-        stakedIds = new uint[](_userStakedIds[user].length());
-        for (uint256 i; i < _userStakedIds[user].length(); ++i) {
-            stakedIds[i] = uint256(_userStakedIds[user]._inner._values[i]);
+        stakedIds = new uint[](_userStakingIds[user].length());
+        for (uint256 i; i < _userStakingIds[user].length(); ++i) {
+            stakedIds[i] = uint256(_userStakingIds[user]._inner._values[i]);
         }
     }
 
