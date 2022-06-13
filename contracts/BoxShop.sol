@@ -20,7 +20,6 @@ contract BoxShop is AccessControl {
     bytes32 public constant OPERATION_ROLE = keccak256("OPERATION_ROLE");
 
     string public name;
-    address public _box;
 
     struct Package {
         bool isActive;
@@ -99,7 +98,7 @@ contract BoxShop is AccessControl {
         string calldata _name
     ) external onlyRole(OWNER_ROLE) returns (uint)
     {
-        require(box.length > 0 && box.length == boxAmounts.length, "miss match length");
+        require(box.length == boxAmounts.length, "miss match length");
         uint newTypeId = _packageIds.current();
         _packageIds.increment();
         Package memory package;
@@ -130,7 +129,7 @@ contract BoxShop is AccessControl {
         string calldata _name
     ) external onlyRole(OWNER_ROLE)
     {
-        require(box.length > 0 && box.length == boxAmounts.length, "miss match length");
+        require(box.length == boxAmounts.length, "miss match length");
         Package storage package = _packages[packageId];
         package.name = _name;
         package.startTime = startTime;
@@ -145,10 +144,6 @@ contract BoxShop is AccessControl {
 
     function toggleBoxType(uint packageId) public onlyRole(OWNER_ROLE) {
         _packages[packageId].isActive = !_packages[packageId].isActive;
-    }
-
-    function setBox(address box) public onlyRole(OWNER_ROLE) {
-        _box = box;
     }
 
     // ============ EMERGENCY FUNCTION ==============

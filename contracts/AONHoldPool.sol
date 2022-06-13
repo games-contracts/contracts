@@ -9,8 +9,7 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
-
-contract AONStakingPoolRewardNFT is AccessControl, ReentrancyGuard {
+contract AONHoldPool is AccessControl, ReentrancyGuard {
     using EnumerableSet for EnumerableSet.UintSet;
     using Counters for Counters.Counter;
     bytes32 public constant OWNER_ROLE = keccak256("OWNER_ROLE");
@@ -22,17 +21,21 @@ contract AONStakingPoolRewardNFT is AccessControl, ReentrancyGuard {
     mapping(address => uint[]) private _userStakingIds;
     mapping(uint => EnumerableSet.UintSet) private _rewardTokenIds;
 
-
     IERC20 public stakeToken;
+
+    struct TokenStake {
+        address token;
+        uint amount;
+    }
 
     struct Package {
         bool isActive;
         uint packageId;
-        uint amountStake;
         uint lockTime;
         uint supply;
         uint limit;
-        IERC721 rewardNFT;
+        TokenStake currency;
+        TokenStake nft;
     }
 
     struct StakedInfo {
@@ -40,13 +43,14 @@ contract AONStakingPoolRewardNFT is AccessControl, ReentrancyGuard {
         uint withdrawTime;
         uint packageId;
         address user;
+        uint[] tokenIds;
     }
 
     mapping(uint => Package) private _packages;
     mapping(uint => StakedInfo) public _staked;
 
     event LogAddPackage(Package package);
-    event LogStaked(address user, Package package, uint time);
+    event LogStaked(address user, Package package, uint[] tokenIds, uint time);
     event LogWithdraw(address user, uint packageId, uint time);
     event LogInitRewardIds(uint packageId, uint[] tokenIds);
     event LogInitRewardIndex(uint packageId, uint fromId, uint toId);
@@ -75,9 +79,8 @@ contract AONStakingPoolRewardNFT is AccessControl, ReentrancyGuard {
         }
     }
 
-    function addPackage(uint amountStake,
-        uint lockTime,
-        IERC721 rewardNFT) external onlyRole(OWNER_ROLE) {
+    function addPackage(
+        uint lockTime) external onlyRole(OWNER_ROLE) {
 
         uint newId = _packageIds.current();
         _packageIds.increment();
@@ -85,9 +88,7 @@ contract AONStakingPoolRewardNFT is AccessControl, ReentrancyGuard {
         Package memory package;
         package.isActive = true;
         package.packageId = newId;
-        package.amountStake = amountStake;
         package.lockTime = lockTime;
-        package.rewardNFT = rewardNFT;
 
         _packages[newId] = package;
         emit LogAddPackage(package);
@@ -98,27 +99,38 @@ contract AONStakingPoolRewardNFT is AccessControl, ReentrancyGuard {
         _packages[packageId].isActive = !_packages[packageId].isActive;
     }
 
-    function stake(uint packageId) public activePackage(packageId) nonReentrant returns (uint) {
+    function stake(uint packageId, uint[] calldata tokenIds) public activePackage(packageId) nonReentrant returns (uint) {
         Package memory _package = _packages[packageId];
-        require(_package.limit > _package.supply, "out of rewards");
+        require(_package.limit > _package.supply, "over limit");
+        bool requireERC20 = _package.currency.token != address(0);
+        bool requireERC721 = _package.nft.token != address(0) && _package.nft.amount > 0;
+        require(requireERC20 || requireERC721, "invalid stake");
 
         uint stakedId = _stakedIds.current();
         _stakedIds.increment();
         StakedInfo memory _stakedInfo;
-
         _stakedInfo.packageId = packageId;
         _stakedInfo.user = msg.sender;
         _stakedInfo.withdrawTime = block.timestamp + _package.lockTime;
+
+        if (requireERC20) {
+            bool transferred = IERC20(_package.currency.token).transferFrom(msg.sender, address(this), _package.currency.amount);
+            require(transferred, "cannot transfer");
+        }
+        if (requireERC721) {
+            uint length = tokenIds.length;
+            require(_package.nft.amount == length, "miss match length");
+            for (uint i; i < length; ++i) {
+                IERC721(_package.nft.token).transferFrom(msg.sender, address(this), tokenIds[i]);
+            }
+            _stakedInfo.tokenIds = tokenIds;
+        }
+
         _staked[stakedId] = _stakedInfo;
-
-
         _userStakingIds[msg.sender].push(stakedId);
 
-        bool transferred = stakeToken.transferFrom(msg.sender, address(this), _package.amountStake);
-        require(transferred, "cannot transfer");
-
         _packages[packageId].supply++;
-        emit LogStaked(msg.sender, _package, block.timestamp);
+        emit LogStaked(msg.sender, _package, tokenIds, block.timestamp);
         return stakedId;
     }
 
@@ -128,64 +140,31 @@ contract AONStakingPoolRewardNFT is AccessControl, ReentrancyGuard {
         require(_stakedInfo.withdrawTime < block.timestamp, "cannot withdraw now");
         _stakedInfo.withdraw = true;
         Package memory _package = _packages[_stakedInfo.packageId];
-        bool transferred = stakeToken.transfer(msg.sender, _package.amountStake);
-        require(transferred, "cannot transfer");
 
-        EnumerableSet.UintSet storage _rewardIds = _rewardTokenIds[_stakedInfo.packageId];
+        if (_package.currency.token != address(0)) {
+            bool transferred = IERC20(_package.currency.token).transfer(msg.sender, _package.currency.amount);
+            require(transferred, "cannot transfer");
+        }
+        if (_package.nft.token != address(0)) {
+            uint length = _stakedInfo.tokenIds.length;
+            for (uint i; i < length; ++i) {
+                IERC721(_package.nft.token).transferFrom(address(this), msg.sender, _stakedInfo.tokenIds[i]);
+            }
+        }
 
-        uint tokenId = EnumerableSet.at(_rewardIds, 0);
-        EnumerableSet.remove(_rewardIds, tokenId);
-
-        _package.rewardNFT.transferFrom(address(this), msg.sender, tokenId);
-
+        //        _package.rewardNFT.transferFrom(address(this), msg.sender, tokenId);
         emit LogWithdraw(msg.sender, stakedId, block.timestamp);
     }
     // ============ OPERATION FUNCTION ==============
-    function initRewardIds(uint packageId, uint[] calldata tokenIds) activePackage(packageId) external onlyRole(OWNER_ROLE) {
-        EnumerableSet.UintSet storage set = _rewardTokenIds[packageId];
-        uint count;
-        for (uint i; i < tokenIds.length; ++i) {
-            bool isOwnerOf = address(this) == _packages[packageId].rewardNFT.ownerOf(tokenIds[i]);
-            if (isOwnerOf) {
-                ++count;
-                EnumerableSet.add(set, tokenIds[i]);
-            }
-        }
-        _packages[packageId].limit += count;
-        emit LogInitRewardIds(packageId, tokenIds);
-    }
-
-    function initRewardIndex(uint packageId, uint fromId, uint toId) activePackage(packageId) external onlyRole(OWNER_ROLE) {
-        //        require(_packages[packageId].rewardTokenIds.length == 0, "rewards has been init");
-        //        uint count;
-        //        for (uint i = fromId; i <= toId; ++i) {
-        //            bool isOwnerOf = address(this) == _packages[packageId].rewardNFT.ownerOf(i);
-        //            if (isOwnerOf) {
-        //                ++count;
-        //                _packages[packageId].rewardTokenIds.push(i);
-        //            }
-        //        }
-        //        _packages[packageId].limitStaked = count;
-        emit LogInitRewardIndex(packageId, fromId, toId);
-    }
-    //
-    function getRewardIds(uint packageId) public view returns (uint[] memory tokenIds) {
-        uint length = _rewardTokenIds[packageId].length();
-        tokenIds = new uint[](length);
-        for (uint256 i; i < length; ++i) {
-            tokenIds[i] = uint256(_rewardTokenIds[packageId]._inner._values[i]);
-        }
-    }
-
     function getStakedIds(address user) public view returns (uint[] memory stakedIds) {
-        uint length = _userStakingIds[user].length;
-        stakedIds = new uint[](length);
-        for (uint256 i; i < length; ++i) {
-            stakedIds[i] = uint256(_userStakingIds[user][i]);
+        stakedIds = new uint[](_userStakingIds[user].length);
+        for (uint256 i; i < _userStakingIds[user].length; ++i) {
+            stakedIds[i] = _userStakingIds[user][i];
         }
     }
 
     // ============ EMERGENCY FUNCTION ==============
+
     function emergencyWithdrawERC20(
         address token,
         uint amount,
