@@ -121,6 +121,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.AON__factory>;
     getContractFactory(
+      name: "AONHoldPool",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.AONHoldPool__factory>;
+    getContractFactory(
       name: "AONStakingPoolRewardNFT",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.AONStakingPoolRewardNFT__factory>;
@@ -148,6 +152,14 @@ declare module "hardhat/types/runtime" {
       name: "IArenaBox",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IArenaBox__factory>;
+    getContractFactory(
+      name: "ClaimGacha",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ClaimGacha__factory>;
+    getContractFactory(
+      name: "INFTContract",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.INFTContract__factory>;
     getContractFactory(
       name: "BPContract",
       signerOrOptions?: ethers.Signer | FactoryOptions

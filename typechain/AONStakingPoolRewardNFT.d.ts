@@ -323,8 +323,8 @@ export class AONStakingPoolRewardNFT extends BaseContract {
           packageId: BigNumber;
           amountStake: BigNumber;
           lockTime: BigNumber;
-          totalStaked: BigNumber;
-          limitStaked: BigNumber;
+          supply: BigNumber;
+          limit: BigNumber;
           rewardNFT: string;
         })[]
       ] & {
@@ -341,8 +341,8 @@ export class AONStakingPoolRewardNFT extends BaseContract {
           packageId: BigNumber;
           amountStake: BigNumber;
           lockTime: BigNumber;
-          totalStaked: BigNumber;
-          limitStaked: BigNumber;
+          supply: BigNumber;
+          limit: BigNumber;
           rewardNFT: string;
         })[];
       }
@@ -483,8 +483,8 @@ export class AONStakingPoolRewardNFT extends BaseContract {
       packageId: BigNumber;
       amountStake: BigNumber;
       lockTime: BigNumber;
-      totalStaked: BigNumber;
-      limitStaked: BigNumber;
+      supply: BigNumber;
+      limit: BigNumber;
       rewardNFT: string;
     })[]
   >;
@@ -621,8 +621,8 @@ export class AONStakingPoolRewardNFT extends BaseContract {
         packageId: BigNumber;
         amountStake: BigNumber;
         lockTime: BigNumber;
-        totalStaked: BigNumber;
-        limitStaked: BigNumber;
+        supply: BigNumber;
+        limit: BigNumber;
         rewardNFT: string;
       })[]
     >;
@@ -713,8 +713,8 @@ export class AONStakingPoolRewardNFT extends BaseContract {
           packageId: BigNumber;
           amountStake: BigNumber;
           lockTime: BigNumber;
-          totalStaked: BigNumber;
-          limitStaked: BigNumber;
+          supply: BigNumber;
+          limit: BigNumber;
           rewardNFT: string;
         }
       ],
@@ -732,8 +732,8 @@ export class AONStakingPoolRewardNFT extends BaseContract {
           packageId: BigNumber;
           amountStake: BigNumber;
           lockTime: BigNumber;
-          totalStaked: BigNumber;
-          limitStaked: BigNumber;
+          supply: BigNumber;
+          limit: BigNumber;
           rewardNFT: string;
         };
       }
@@ -776,8 +776,8 @@ export class AONStakingPoolRewardNFT extends BaseContract {
           packageId: BigNumber;
           amountStake: BigNumber;
           lockTime: BigNumber;
-          totalStaked: BigNumber;
-          limitStaked: BigNumber;
+          supply: BigNumber;
+          limit: BigNumber;
           rewardNFT: string;
         },
         BigNumber
@@ -797,8 +797,8 @@ export class AONStakingPoolRewardNFT extends BaseContract {
           packageId: BigNumber;
           amountStake: BigNumber;
           lockTime: BigNumber;
-          totalStaked: BigNumber;
-          limitStaked: BigNumber;
+          supply: BigNumber;
+          limit: BigNumber;
           rewardNFT: string;
         };
         time: BigNumber;

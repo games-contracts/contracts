@@ -12,7 +12,6 @@ import {
   BaseContract,
   ContractTransaction,
   Overrides,
-  PayableOverrides,
   CallOverrides,
 } from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
@@ -20,26 +19,23 @@ import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
-interface BoxShopInterface extends ethers.utils.Interface {
+interface ClaimGachaInterface extends ethers.utils.Interface {
   functions: {
     "DEFAULT_ADMIN_ROLE()": FunctionFragment;
-    "OPERATION_ROLE()": FunctionFragment;
     "OWNER_ROLE()": FunctionFragment;
-    "addPackage(uint256,uint256,uint256,uint256,address,address[],uint256[],string)": FunctionFragment;
-    "buy(uint256,uint256)": FunctionFragment;
+    "SIGNER_ROLE()": FunctionFragment;
+    "claimHero(string,address,address,bytes,bytes)": FunctionFragment;
+    "claimToken(string,address,address,uint256,bytes)": FunctionFragment;
+    "claimed(string)": FunctionFragment;
     "emergencyWithdrawERC20(address,uint256,address)": FunctionFragment;
     "emergencyWithdrawERC721(address,address,uint256)": FunctionFragment;
     "emergencyWithdrawNative(uint256,address)": FunctionFragment;
-    "getPackages(uint256,uint256)": FunctionFragment;
     "getRoleAdmin(bytes32)": FunctionFragment;
     "grantRole(bytes32,address)": FunctionFragment;
     "hasRole(bytes32,address)": FunctionFragment;
-    "name()": FunctionFragment;
     "renounceRole(bytes32,address)": FunctionFragment;
     "revokeRole(bytes32,address)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
-    "toggleBoxType(uint256)": FunctionFragment;
-    "updatePackage(uint256,uint256,uint256,uint256,uint256,address,address[],uint256[],string)": FunctionFragment;
   };
 
   encodeFunctionData(
@@ -47,30 +43,22 @@ interface BoxShopInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "OPERATION_ROLE",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
     functionFragment: "OWNER_ROLE",
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "addPackage",
-    values: [
-      BigNumberish,
-      BigNumberish,
-      BigNumberish,
-      BigNumberish,
-      string,
-      string[],
-      BigNumberish[],
-      string
-    ]
+    functionFragment: "SIGNER_ROLE",
+    values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "buy",
-    values: [BigNumberish, BigNumberish]
+    functionFragment: "claimHero",
+    values: [string, string, string, BytesLike, BytesLike]
   ): string;
+  encodeFunctionData(
+    functionFragment: "claimToken",
+    values: [string, string, string, BigNumberish, BytesLike]
+  ): string;
+  encodeFunctionData(functionFragment: "claimed", values: [string]): string;
   encodeFunctionData(
     functionFragment: "emergencyWithdrawERC20",
     values: [string, BigNumberish, string]
@@ -84,10 +72,6 @@ interface BoxShopInterface extends ethers.utils.Interface {
     values: [BigNumberish, string]
   ): string;
   encodeFunctionData(
-    functionFragment: "getPackages",
-    values: [BigNumberish, BigNumberish]
-  ): string;
-  encodeFunctionData(
     functionFragment: "getRoleAdmin",
     values: [BytesLike]
   ): string;
@@ -99,7 +83,6 @@ interface BoxShopInterface extends ethers.utils.Interface {
     functionFragment: "hasRole",
     values: [BytesLike, string]
   ): string;
-  encodeFunctionData(functionFragment: "name", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "renounceRole",
     values: [BytesLike, string]
@@ -112,36 +95,19 @@ interface BoxShopInterface extends ethers.utils.Interface {
     functionFragment: "supportsInterface",
     values: [BytesLike]
   ): string;
-  encodeFunctionData(
-    functionFragment: "toggleBoxType",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "updatePackage",
-    values: [
-      BigNumberish,
-      BigNumberish,
-      BigNumberish,
-      BigNumberish,
-      BigNumberish,
-      string,
-      string[],
-      BigNumberish[],
-      string
-    ]
-  ): string;
 
   decodeFunctionResult(
     functionFragment: "DEFAULT_ADMIN_ROLE",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "OWNER_ROLE", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "OPERATION_ROLE",
+    functionFragment: "SIGNER_ROLE",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "OWNER_ROLE", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "addPackage", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "buy", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "claimHero", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "claimToken", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "claimed", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "emergencyWithdrawERC20",
     data: BytesLike
@@ -155,16 +121,11 @@ interface BoxShopInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "getPackages",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "getRoleAdmin",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "grantRole", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "hasRole", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "renounceRole",
     data: BytesLike
@@ -174,33 +135,23 @@ interface BoxShopInterface extends ethers.utils.Interface {
     functionFragment: "supportsInterface",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: "toggleBoxType",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "updatePackage",
-    data: BytesLike
-  ): Result;
 
   events: {
-    "LogAddPackage(tuple)": EventFragment;
-    "LogBuy(address,uint256,uint256,uint256)": EventFragment;
-    "LogUpdatePackage(tuple)": EventFragment;
+    "LogClaimHero(string,address,address,uint256)": EventFragment;
+    "LogClaimToken(string,address,address,uint256)": EventFragment;
     "RoleAdminChanged(bytes32,bytes32,bytes32)": EventFragment;
     "RoleGranted(bytes32,address,address)": EventFragment;
     "RoleRevoked(bytes32,address,address)": EventFragment;
   };
 
-  getEvent(nameOrSignatureOrTopic: "LogAddPackage"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "LogBuy"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "LogUpdatePackage"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "LogClaimHero"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "LogClaimToken"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleAdminChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleGranted"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleRevoked"): EventFragment;
 }
 
-export class BoxShop extends BaseContract {
+export class ClaimGacha extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -241,32 +192,34 @@ export class BoxShop extends BaseContract {
     toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
-  interface: BoxShopInterface;
+  interface: ClaimGachaInterface;
 
   functions: {
     DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<[string]>;
 
-    OPERATION_ROLE(overrides?: CallOverrides): Promise<[string]>;
-
     OWNER_ROLE(overrides?: CallOverrides): Promise<[string]>;
 
-    addPackage(
-      startTime: BigNumberish,
-      endTime: BigNumberish,
-      sellLimit: BigNumberish,
-      price: BigNumberish,
-      currency: string,
-      box: string[],
-      boxAmounts: BigNumberish[],
-      _name: string,
+    SIGNER_ROLE(overrides?: CallOverrides): Promise<[string]>;
+
+    claimHero(
+      itx: string,
+      user: string,
+      token: string,
+      data: BytesLike,
+      signature: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    buy(
-      packageId: BigNumberish,
-      quantity: BigNumberish,
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
+    claimToken(
+      itx: string,
+      user: string,
+      token: string,
+      amount: BigNumberish,
+      signature: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    claimed(arg0: string, overrides?: CallOverrides): Promise<[BigNumber]>;
 
     emergencyWithdrawERC20(
       token: string,
@@ -288,66 +241,6 @@ export class BoxShop extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    getPackages(
-      fromIdx: BigNumberish,
-      toIdx: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<
-      [
-        ([
-          boolean,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          string,
-          string[],
-          BigNumber[],
-          string
-        ] & {
-          isActive: boolean;
-          packageId: BigNumber;
-          startTime: BigNumber;
-          endTime: BigNumber;
-          sellLimit: BigNumber;
-          sold: BigNumber;
-          price: BigNumber;
-          currency: string;
-          box: string[];
-          boxAmounts: BigNumber[];
-          name: string;
-        })[]
-      ] & {
-        packages: ([
-          boolean,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          string,
-          string[],
-          BigNumber[],
-          string
-        ] & {
-          isActive: boolean;
-          packageId: BigNumber;
-          startTime: BigNumber;
-          endTime: BigNumber;
-          sellLimit: BigNumber;
-          sold: BigNumber;
-          price: BigNumber;
-          currency: string;
-          box: string[];
-          boxAmounts: BigNumber[];
-          name: string;
-        })[];
-      }
-    >;
-
     getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<[string]>;
 
     grantRole(
@@ -361,8 +254,6 @@ export class BoxShop extends BaseContract {
       account: string,
       overrides?: CallOverrides
     ): Promise<[boolean]>;
-
-    name(overrides?: CallOverrides): Promise<[string]>;
 
     renounceRole(
       role: BytesLike,
@@ -380,49 +271,33 @@ export class BoxShop extends BaseContract {
       interfaceId: BytesLike,
       overrides?: CallOverrides
     ): Promise<[boolean]>;
-
-    toggleBoxType(
-      packageId: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    updatePackage(
-      packageId: BigNumberish,
-      startTime: BigNumberish,
-      endTime: BigNumberish,
-      sellLimit: BigNumberish,
-      price: BigNumberish,
-      currency: string,
-      box: string[],
-      boxAmounts: BigNumberish[],
-      _name: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
   };
 
   DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
 
-  OPERATION_ROLE(overrides?: CallOverrides): Promise<string>;
-
   OWNER_ROLE(overrides?: CallOverrides): Promise<string>;
 
-  addPackage(
-    startTime: BigNumberish,
-    endTime: BigNumberish,
-    sellLimit: BigNumberish,
-    price: BigNumberish,
-    currency: string,
-    box: string[],
-    boxAmounts: BigNumberish[],
-    _name: string,
+  SIGNER_ROLE(overrides?: CallOverrides): Promise<string>;
+
+  claimHero(
+    itx: string,
+    user: string,
+    token: string,
+    data: BytesLike,
+    signature: BytesLike,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  buy(
-    packageId: BigNumberish,
-    quantity: BigNumberish,
-    overrides?: PayableOverrides & { from?: string | Promise<string> }
+  claimToken(
+    itx: string,
+    user: string,
+    token: string,
+    amount: BigNumberish,
+    signature: BytesLike,
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
+
+  claimed(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
   emergencyWithdrawERC20(
     token: string,
@@ -444,38 +319,6 @@ export class BoxShop extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  getPackages(
-    fromIdx: BigNumberish,
-    toIdx: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<
-    ([
-      boolean,
-      BigNumber,
-      BigNumber,
-      BigNumber,
-      BigNumber,
-      BigNumber,
-      BigNumber,
-      string,
-      string[],
-      BigNumber[],
-      string
-    ] & {
-      isActive: boolean;
-      packageId: BigNumber;
-      startTime: BigNumber;
-      endTime: BigNumber;
-      sellLimit: BigNumber;
-      sold: BigNumber;
-      price: BigNumber;
-      currency: string;
-      box: string[];
-      boxAmounts: BigNumber[];
-      name: string;
-    })[]
-  >;
-
   getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<string>;
 
   grantRole(
@@ -489,8 +332,6 @@ export class BoxShop extends BaseContract {
     account: string,
     overrides?: CallOverrides
   ): Promise<boolean>;
-
-  name(overrides?: CallOverrides): Promise<string>;
 
   renounceRole(
     role: BytesLike,
@@ -509,48 +350,32 @@ export class BoxShop extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
-  toggleBoxType(
-    packageId: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  updatePackage(
-    packageId: BigNumberish,
-    startTime: BigNumberish,
-    endTime: BigNumberish,
-    sellLimit: BigNumberish,
-    price: BigNumberish,
-    currency: string,
-    box: string[],
-    boxAmounts: BigNumberish[],
-    _name: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   callStatic: {
     DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
 
-    OPERATION_ROLE(overrides?: CallOverrides): Promise<string>;
-
     OWNER_ROLE(overrides?: CallOverrides): Promise<string>;
 
-    addPackage(
-      startTime: BigNumberish,
-      endTime: BigNumberish,
-      sellLimit: BigNumberish,
-      price: BigNumberish,
-      currency: string,
-      box: string[],
-      boxAmounts: BigNumberish[],
-      _name: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    SIGNER_ROLE(overrides?: CallOverrides): Promise<string>;
 
-    buy(
-      packageId: BigNumberish,
-      quantity: BigNumberish,
+    claimHero(
+      itx: string,
+      user: string,
+      token: string,
+      data: BytesLike,
+      signature: BytesLike,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    claimToken(
+      itx: string,
+      user: string,
+      token: string,
+      amount: BigNumberish,
+      signature: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    claimed(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     emergencyWithdrawERC20(
       token: string,
@@ -572,38 +397,6 @@ export class BoxShop extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    getPackages(
-      fromIdx: BigNumberish,
-      toIdx: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<
-      ([
-        boolean,
-        BigNumber,
-        BigNumber,
-        BigNumber,
-        BigNumber,
-        BigNumber,
-        BigNumber,
-        string,
-        string[],
-        BigNumber[],
-        string
-      ] & {
-        isActive: boolean;
-        packageId: BigNumber;
-        startTime: BigNumber;
-        endTime: BigNumber;
-        sellLimit: BigNumber;
-        sold: BigNumber;
-        price: BigNumber;
-        currency: string;
-        box: string[];
-        boxAmounts: BigNumber[];
-        name: string;
-      })[]
-    >;
-
     getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<string>;
 
     grantRole(
@@ -617,8 +410,6 @@ export class BoxShop extends BaseContract {
       account: string,
       overrides?: CallOverrides
     ): Promise<boolean>;
-
-    name(overrides?: CallOverrides): Promise<string>;
 
     renounceRole(
       role: BytesLike,
@@ -636,158 +427,27 @@ export class BoxShop extends BaseContract {
       interfaceId: BytesLike,
       overrides?: CallOverrides
     ): Promise<boolean>;
-
-    toggleBoxType(
-      packageId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    updatePackage(
-      packageId: BigNumberish,
-      startTime: BigNumberish,
-      endTime: BigNumberish,
-      sellLimit: BigNumberish,
-      price: BigNumberish,
-      currency: string,
-      box: string[],
-      boxAmounts: BigNumberish[],
-      _name: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
   };
 
   filters: {
-    LogAddPackage(
-      package?: null
-    ): TypedEventFilter<
-      [
-        [
-          boolean,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          string,
-          string[],
-          BigNumber[],
-          string
-        ] & {
-          isActive: boolean;
-          packageId: BigNumber;
-          startTime: BigNumber;
-          endTime: BigNumber;
-          sellLimit: BigNumber;
-          sold: BigNumber;
-          price: BigNumber;
-          currency: string;
-          box: string[];
-          boxAmounts: BigNumber[];
-          name: string;
-        }
-      ],
-      {
-        package: [
-          boolean,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          string,
-          string[],
-          BigNumber[],
-          string
-        ] & {
-          isActive: boolean;
-          packageId: BigNumber;
-          startTime: BigNumber;
-          endTime: BigNumber;
-          sellLimit: BigNumber;
-          sold: BigNumber;
-          price: BigNumber;
-          currency: string;
-          box: string[];
-          boxAmounts: BigNumber[];
-          name: string;
-        };
-      }
-    >;
-
-    LogBuy(
+    LogClaimHero(
+      itx?: null,
       user?: null,
-      packageId?: null,
-      quantity?: null,
-      totalPrice?: null
+      token?: null,
+      tokenId?: null
     ): TypedEventFilter<
-      [string, BigNumber, BigNumber, BigNumber],
-      {
-        user: string;
-        packageId: BigNumber;
-        quantity: BigNumber;
-        totalPrice: BigNumber;
-      }
+      [string, string, string, BigNumber],
+      { itx: string; user: string; token: string; tokenId: BigNumber }
     >;
 
-    LogUpdatePackage(
-      package?: null
+    LogClaimToken(
+      itx?: null,
+      user?: null,
+      token?: null,
+      amount?: null
     ): TypedEventFilter<
-      [
-        [
-          boolean,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          string,
-          string[],
-          BigNumber[],
-          string
-        ] & {
-          isActive: boolean;
-          packageId: BigNumber;
-          startTime: BigNumber;
-          endTime: BigNumber;
-          sellLimit: BigNumber;
-          sold: BigNumber;
-          price: BigNumber;
-          currency: string;
-          box: string[];
-          boxAmounts: BigNumber[];
-          name: string;
-        }
-      ],
-      {
-        package: [
-          boolean,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          string,
-          string[],
-          BigNumber[],
-          string
-        ] & {
-          isActive: boolean;
-          packageId: BigNumber;
-          startTime: BigNumber;
-          endTime: BigNumber;
-          sellLimit: BigNumber;
-          sold: BigNumber;
-          price: BigNumber;
-          currency: string;
-          box: string[];
-          boxAmounts: BigNumber[];
-          name: string;
-        };
-      }
+      [string, string, string, BigNumber],
+      { itx: string; user: string; token: string; amount: BigNumber }
     >;
 
     RoleAdminChanged(
@@ -821,27 +481,29 @@ export class BoxShop extends BaseContract {
   estimateGas: {
     DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
 
-    OPERATION_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
-
     OWNER_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
 
-    addPackage(
-      startTime: BigNumberish,
-      endTime: BigNumberish,
-      sellLimit: BigNumberish,
-      price: BigNumberish,
-      currency: string,
-      box: string[],
-      boxAmounts: BigNumberish[],
-      _name: string,
+    SIGNER_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
+
+    claimHero(
+      itx: string,
+      user: string,
+      token: string,
+      data: BytesLike,
+      signature: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    buy(
-      packageId: BigNumberish,
-      quantity: BigNumberish,
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
+    claimToken(
+      itx: string,
+      user: string,
+      token: string,
+      amount: BigNumberish,
+      signature: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
+
+    claimed(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     emergencyWithdrawERC20(
       token: string,
@@ -863,12 +525,6 @@ export class BoxShop extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    getPackages(
-      fromIdx: BigNumberish,
-      toIdx: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     getRoleAdmin(
       role: BytesLike,
       overrides?: CallOverrides
@@ -886,8 +542,6 @@ export class BoxShop extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    name(overrides?: CallOverrides): Promise<BigNumber>;
-
     renounceRole(
       role: BytesLike,
       account: string,
@@ -903,24 +557,6 @@ export class BoxShop extends BaseContract {
     supportsInterface(
       interfaceId: BytesLike,
       overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    toggleBoxType(
-      packageId: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    updatePackage(
-      packageId: BigNumberish,
-      startTime: BigNumberish,
-      endTime: BigNumberish,
-      sellLimit: BigNumberish,
-      price: BigNumberish,
-      currency: string,
-      box: string[],
-      boxAmounts: BigNumberish[],
-      _name: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
   };
 
@@ -929,26 +565,31 @@ export class BoxShop extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    OPERATION_ROLE(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     OWNER_ROLE(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    addPackage(
-      startTime: BigNumberish,
-      endTime: BigNumberish,
-      sellLimit: BigNumberish,
-      price: BigNumberish,
-      currency: string,
-      box: string[],
-      boxAmounts: BigNumberish[],
-      _name: string,
+    SIGNER_ROLE(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    claimHero(
+      itx: string,
+      user: string,
+      token: string,
+      data: BytesLike,
+      signature: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    buy(
-      packageId: BigNumberish,
-      quantity: BigNumberish,
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
+    claimToken(
+      itx: string,
+      user: string,
+      token: string,
+      amount: BigNumberish,
+      signature: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    claimed(
+      arg0: string,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     emergencyWithdrawERC20(
@@ -971,12 +612,6 @@ export class BoxShop extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    getPackages(
-      fromIdx: BigNumberish,
-      toIdx: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     getRoleAdmin(
       role: BytesLike,
       overrides?: CallOverrides
@@ -994,8 +629,6 @@ export class BoxShop extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    name(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     renounceRole(
       role: BytesLike,
       account: string,
@@ -1011,24 +644,6 @@ export class BoxShop extends BaseContract {
     supportsInterface(
       interfaceId: BytesLike,
       overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    toggleBoxType(
-      packageId: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    updatePackage(
-      packageId: BigNumberish,
-      startTime: BigNumberish,
-      endTime: BigNumberish,
-      sellLimit: BigNumberish,
-      price: BigNumberish,
-      currency: string,
-      box: string[],
-      boxAmounts: BigNumberish[],
-      _name: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };
 }
