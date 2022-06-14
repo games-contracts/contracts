@@ -31,6 +31,7 @@
 | `empire`    |          |          `Array String` |  List empire filter |
 | `sort_by`   |          |     [Sort By](#sort-by) |             Sort by |
 | `sort_type` |          | [Sort Type](#sort-type) |           Sort type |
+| `owner`     |          |                `String` |       owner address |
 
 - Response: `JSON Object`
 
